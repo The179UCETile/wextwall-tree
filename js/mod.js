@@ -13,7 +13,7 @@ let modInfo = {
 // Set your version in num and name
 let VERSION = {
 	num: "0.0",
-	name: "Literally nothing",
+	name: "Release",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -25,7 +25,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
+var doNotCallTheseFunctionsEveryTick = []
 
 function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
@@ -47,6 +47,7 @@ function getPointGen() {
 	if (hasUpgrade("dev", 13)) gain = gain.times(upgradeEffect("dev", 13));
 	if (hasUpgrade("dev", 21)) gain = gain.mul(3);
 	if (hasUpgrade("dev", 23)) gain = gain.times(upgradeEffect("dev", 23));
+	if (hasUpgrade("tw", 11)) gain = gain.mul(4);
 	return gain
 }
 

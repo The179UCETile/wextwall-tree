@@ -6,7 +6,7 @@ addLayer("dev", {
         unlocked: true,
 		points: new Decimal(0),
     }},
-    color: "#FFFF00",
+    color: "#0020FF",
     requires: new Decimal(8), // Can be a function that takes requirement increases into account
     resource: "development points", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
@@ -16,6 +16,7 @@ addLayer("dev", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1);
     	if (hasUpgrade("dev", 22)) mult = mult.mul(upgradeEffect("dev", 22));
+    	if (hasUpgrade("tw", 1)) mult = mult.mul(2);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -65,7 +66,7 @@ addLayer("dev", {
             description: "Multiply your development point gain based on your points.",
             cost: new Decimal(6),
             effect() {
-                return player.points.add(1).pow(0.15)
+                return player.points.add(1).pow(0.12)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
@@ -75,14 +76,58 @@ addLayer("dev", {
         23: {
             title: "Other features",
             description: "Multiply your point gain based on itself.",
-            cost: new Decimal(15),
+            cost: new Decimal(20),
             effect() {
-                return player.points.add(10).log10().pow(1.25)
+                return player.points.add(10).log10().pow(1.4)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
                 return hasUpgrade("dev", 22)
             }
         },
+        31: {
+            title: "Release",
+            description: "Unlock the TextWall layer.",
+            cost: new Decimal(100),
+            unlocked() {
+                return hasUpgrade("dev", 23)
+            }
+        }
+    }
+});
+addLayer("tw", {
+    name: "TextWall", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "tw", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#FFD635",
+    requires: new Decimal(100), // Can be a function that takes requirement increases into account
+    resource: "TextWallers", // Name of prestige currency
+    baseResource: "development points", // Name of resource prestige is based on
+    baseAmount() {return player["dev"].points}, // Get the current amount of baseResource
+    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 0.5, // Prestige currency exponent
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new Decimal(1);
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 1,
+    hotkeys: [
+        {key: "w", description: "W: Reset for TextWallers", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown(){return hasUpgrade("dev", 31) || hasUpgrade("tw", 11)},
+    branches: [["dev", 1]],
+    upgrades: {
+        11: {
+            title: "<s>Nametags</s> Registeration",
+            description: "Multiply your points by 4x and double your development points.",
+            cost: new Decimal("1")
+        }
     }
 })
