@@ -6,7 +6,7 @@ let modInfo = {
 	id: "thetwtree-t179ucet",
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal(8), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
@@ -41,7 +41,12 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(1)
+	let gain = new Decimal(0);
+	if (hasUpgrade("dev", 11)) gain = gain.add(1);
+	if (hasUpgrade("dev", 12)) gain = gain.mul(2);
+	if (hasUpgrade("dev", 13)) gain = gain.times(upgradeEffect("dev", 13));
+	if (hasUpgrade("dev", 21)) gain = gain.mul(3);
+	if (hasUpgrade("dev", 23)) gain = gain.times(upgradeEffect("dev", 23));
 	return gain
 }
 
