@@ -148,7 +148,7 @@ addLayer("tw", {
             description: "Multiply your characters based on your TextWallers.",
             cost: new Decimal(5),
             effect() {
-                return player[this.layer].points.add(1.5).pow(0.4)
+                return player[this.layer].points.add(1.5).pow(0.375)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
@@ -160,7 +160,7 @@ addLayer("tw", {
             description: "Multiply your development points based on your TextWallers.",
             cost: new Decimal(15),
             effect() {
-                return player[this.layer].points.add(1.5).pow(0.3)
+                return player[this.layer].points.add(1.5).pow(0.275)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
@@ -172,7 +172,7 @@ addLayer("tw", {
             description: "Multiply your TextWallers based on your characters.",
             cost: new Decimal(35),
             effect() {
-                return player.points.add(1.5).pow(0.075)
+                return player.points.add(1.5).pow(0.07)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
@@ -184,7 +184,7 @@ addLayer("tw", {
             description: "Multiply your development points based on itself.",
             cost: new Decimal(200),
             effect() {
-                return player["dev"].points.add(1.5).pow(0.1)
+                return player["dev"].points.add(1.5).pow(0.09)
             },
             effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
             unlocked() {
