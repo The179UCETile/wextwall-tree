@@ -1,7 +1,7 @@
 let modInfo = {
 	name: "The TextWall Tree",
 	author: "The179UCETile",
-	pointsName: "points",
+	pointsName: "characters",
 	modFiles: ["layers.js", "tree.js"],
 	id: "thetwtree-t179ucet",
 	discordName: "",
