@@ -1,9 +1,9 @@
 let modInfo = {
-	name: "The ??? Tree",
-	author: "nobody",
+	name: "The TextWall Tree",
+	author: "The179UCETile",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
-
+	id: "thetwtree-t179ucet",
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (10), // Used for hard resets and new players
