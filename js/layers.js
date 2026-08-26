@@ -125,7 +125,7 @@ addLayer("tw", {
     branches: [["dev", 1]],
     upgrades: {
         11: {
-            title: "<s>Nametags</s> Registeration",
+            title: "<s>Nametags</s> Registration",
             description: "Multiply your characters by 4x and double your development points.",
             cost: new Decimal("1")
         }
