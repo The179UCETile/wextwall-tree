@@ -33,7 +33,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return hasUpgrade("dev", 11)
 }
 
 // Calculate points/sec!
@@ -41,13 +41,14 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0);
-	if (hasUpgrade("dev", 11)) gain = gain.add(1);
+	let gain = new Decimal(1);
 	if (hasUpgrade("dev", 12)) gain = gain.mul(2);
 	if (hasUpgrade("dev", 13)) gain = gain.times(upgradeEffect("dev", 13));
 	if (hasUpgrade("dev", 21)) gain = gain.mul(3);
 	if (hasUpgrade("dev", 23)) gain = gain.times(upgradeEffect("dev", 23));
 	if (hasUpgrade("tw", 11)) gain = gain.mul(4);
+	if (hasUpgrade("tw", 12)) gain = gain.times(upgradeEffect("tw", 12));
+  if (hasUpgrade("tw", 31)) gain = gain.mul(2);
 	return gain
 }
 
@@ -57,11 +58,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	"Endgame: 1e11 TextWallers"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player["tw"].points.gte("1e11")
 }
 
 
