@@ -53,6 +53,7 @@ function getPointGen() {
   if (hasUpgrade("spam", 11)) gain = gain.mul(8);
 	if (hasUpgrade("spam", 12)) gain = gain.times(upgradeEffect("spam", 12));
   if (hasUpgrade("build", 13)) gain = gain.pow(1.02);
+  if (hasUpgrade("clickyes", 12)) gain = gain.pow(1.025);
 	return gain
 }
 

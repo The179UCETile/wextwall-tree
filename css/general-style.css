@@ -22,6 +22,9 @@ h1, h2, h3, b, input {
 
 .ach.locked {
 	visibility: visible !important;
+	background-image: none !important;
+	background-color: #808080;
+	border-color: #ff0000;
 }
 
 /* Can meens can be clicked/bought/etc */

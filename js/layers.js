@@ -22,11 +22,13 @@ addLayer("dev", {
     	if (hasUpgrade("tw", 31)) mult = mult.mul(2);
         mult = mult.mul(temp["build"].effect[1]);
     	if (hasUpgrade("build", 21)) mult = mult.mul(5);
+    	if (hasUpgrade("clickyes", 12)) mult = mult.mul(5);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         let exp = new Decimal(1);
     	if (hasUpgrade("spam", 23)) exp = exp.mul(1.015);
+        if (inChallenge("clickyes", 11)) exp = exp.mul(0.65);
         return exp
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
@@ -34,18 +36,21 @@ addLayer("dev", {
         {key: "d", description: "D: Reset for development points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
-    autoUpgrade() {return hasUpgrade("build", 11)},
+    autoUpgrade() {return hasUpgrade("build", 11) || hasMilestone("clickyes", 0)},
     doReset(resettingLayer) {
         if (resettingLayer != "dev") {
             const keep = [];
             if (hasMilestone("build", 0)) keep.push("upgrades");
             if (hasMilestone("spam", 0)) keep.push("upgrades");
+            if (hasMilestone("clickyes", 0)) keep.push("upgrades");
             layerDataReset("dev", keep)
         }
     },
     passiveGeneration() {
-        return hasUpgrade("spam", 11) ? 1 : 0
+        return hasUpgrade("spam", 11) || hasMilestone("clickyes", 0) ? 1 : 0
     },
+    softcap: new Decimal("1e1000"),
+    softcapPower: new Decimal("0.65"),
     upgrades: {
         11: {
             title: "Start development on TextWall",
@@ -127,6 +132,7 @@ addLayer("tw", {
     resource: "TextWallers",
     baseResource: "development points",
     baseAmount() {return player["dev"].points},
+    autoUpgrade() {return hasMilestone("clickyes", 2)},
     type: "normal",
     exponent: 0.5,
     gainMult() {
@@ -137,10 +143,15 @@ addLayer("tw", {
         mult = mult.mul(temp["build"].effect[2]);
     	if (hasUpgrade("build", 13)) mult = mult.mul(2);
     	if (hasUpgrade("spam", 33)) mult = mult.mul(upgradeEffect("spam", 33));
+    	if (hasUpgrade("clickyes", 11)) mult = mult.mul(10);
+    	if (hasUpgrade("clickyes", 12)) mult = mult.mul(5);
+    	if (hasUpgrade("clickyes", 13)) mult = mult.mul(upgradeEffect("clickyes", 13));
         return mult
     },
     gainExp() {
-        return new Decimal(1)
+        exp = new Decimal(1);
+        if (inChallenge("clickyes", 11)) exp = exp.mul(0.65);
+        return exp
     },
     row: 1,
     hotkeys: [
@@ -263,6 +274,7 @@ addLayer("build", {
     directMult() {
         mult = new Decimal(1);
         if (hasUpgrade("build", 23)) mult = mult.mul(1.5);
+    	if (hasUpgrade("clickyes", 12)) mult = mult.mul(1.4);
         return mult
     },
     row: 2,
@@ -274,9 +286,12 @@ addLayer("build", {
     },
     branches: ["tw"],
     canBuyMax() {
-        return hasMilestone("build", 1)
+        return hasMilestone("build", 1) || hasMilestone("clickyes", 1)
     },
     increaseUnlockOrder: ["spam"],
+    buildEffectSoftcap() {
+        return new Decimal(20)
+    },
     effect() {
         if (!player[this.layer].unlocked) return [new Decimal(1), new Decimal(1), new Decimal(1)];
         let eff = [Decimal.pow(3, player[this.layer].best),
@@ -287,21 +302,29 @@ addLayer("build", {
             eff[1] = eff[1].mul(Decimal.pow(2, player[this.layer].total.plus(1).log(8).pow(1.4)));
             eff[2] = eff[2].mul(Decimal.pow(1.5, player[this.layer].total.plus(1).log(8).pow(1.4)));
         };
-        if (player[this.layer].best.gte(20)) {
-            eff[0] = Decimal.pow(3, eff[0].log(3).sub(20).div(player[this.layer].best.sub(20).div(30).add(1)).add(20));
-            eff[1] = Decimal.pow(2, eff[1].log(2).sub(20).div(player[this.layer].best.sub(20).div(30).add(1)).add(20));
-            eff[2] = Decimal.pow(1.5, eff[2].log(1.5).sub(20).div(player[this.layer].best.sub(20).div(30).add(1)).add(20));
+        let softcap = temp[this.layer].buildEffectSoftcap;
+        if (player[this.layer].best.gte(softcap)) {
+            eff[0] = Decimal.pow(3, eff[0].log(3).sub(softcap).div(player[this.layer].best.sub(softcap).div(softcap.mul(1.5)).add(1)).add(softcap));
+            eff[1] = Decimal.pow(2, eff[1].log(2).sub(softcap).div(player[this.layer].best.sub(softcap).div(softcap.mul(1.5)).add(1)).add(softcap));
+            eff[2] = Decimal.pow(1.5, eff[2].log(1.5).sub(softcap).div(player[this.layer].best.sub(softcap).div(softcap.mul(1.5)).add(1)).add(softcap));
         }
         return eff;
     },
     effectDescription() {
-        return `which are boosting characters by ${format(temp[this.layer].effect[0])}x, development points by ${format(temp[this.layer].effect[1])}x and TextWallers by ${format(temp[this.layer].effect[2])}x based on your best builders${hasUpgrade("build", 12) ? " and total builders" : ""}.`
+        return `which are boosting characters by ${format(temp[this.layer].effect[0])}x, development points by ${format(temp[this.layer].effect[1])}x and TextWallers by ${format(temp[this.layer].effect[2])}x based on your best builders${hasUpgrade("build", 12) ? " and total builders" : ""}.${player[this.layer].best.gte(temp[this.layer].buildEffectSoftcap) ? " <span style='font-size:0.75em'>(softcapped)</span>" : ""}`
     },
     increaseUnlockOrder: ["spam"],
+    doReset(resettingLayer) {
+        if (resettingLayer != "build" && resettingLayer != "spam") {
+            const keep = [];
+            if (hasMilestone("clickyes", 2)) keep.push("milestones");
+            layerDataReset("build", keep)
+        }
+    },
     upgrades: {
         11: {
             title: "Horizontal Road",
-            description: "Automate development upgrades.",
+            description: "Automate development layer upgrades.",
             cost: new Decimal(1)
         },
         12: {
@@ -379,10 +402,13 @@ addLayer("spam", {
         if (hasUpgrade("spam", 21)) mult = mult.mul(upgradeEffect("spam", 21));
         if (hasUpgrade("spam", 22)) mult = mult.mul(upgradeEffect("spam", 22));
         if (hasUpgrade("spam", 31)) mult = mult.mul(upgradeEffect("spam", 31));
+    	if (hasUpgrade("clickyes", 11)) mult = mult.mul(3);
         return mult
     },
     gainExp() {
-        return new Decimal(1)
+        exp = new Decimal(1);
+    	if (hasUpgrade("clickyes", 13)) exp = exp.mul(1.02);
+        return exp
     },
     row: 2,
     hotkeys: [
@@ -395,6 +421,13 @@ addLayer("spam", {
     increaseUnlockOrder: ["build"],
     softcap: new Decimal("5e12"),
     softcapPower: new Decimal("0.4"),
+    doReset(resettingLayer) {
+        if (resettingLayer != "build" && resettingLayer != "spam") {
+            const keep = [];
+            if (hasMilestone("clickyes", 2)) keep.push("milestones");
+            layerDataReset("spam", keep)
+        }
+    },
     upgrades: {
         11: {
             title: "Character Spam",
@@ -511,10 +544,35 @@ addLayer("clickyes", {
     resource: "yes button clicks",
     baseResource: "TextWallers",
     baseAmount() {return player["tw"].points},
-    type: "normal",
-    exponent: new Decimal("0.01"),
+    type: "custom",
+    logarithm: new Decimal("1e50"),
+    getResetGain() {
+        let thisLayer = layers[this.layer];
+        return temp[this.layer].baseAmount.gte(thisLayer.requires) ? Decimal.max(0, temp[this.layer].baseAmount.div(thisLayer.requires).log10().div(thisLayer.logarithm.log10()).mul(temp[this.layer].gainMult.pow(temp[this.layer].gainExp)).add(1).floor()) : new Decimal(0);
+    },
+    getNextAt() {
+        let thisLayer = layers[this.layer];
+        return Decimal.max(thisLayer.requires, Decimal.pow(thisLayer.logarithm, temp[this.layer].getResetGain).pow(temp[this.layer].gainMult.pow(temp[this.layer].gainExp).recip()).mul(thisLayer.requires));
+    },
+    canReset() {
+        return temp[this.layer].baseAmount.gte(layers[this.layer].requires)
+    },
+    prestigeNotify() {
+        return temp[this.layer].getResetGain.gte(player[this.layer].points.div(10)) && temp[this.layer].getResetGain.neq(0)
+    },
+    prestigeButtonText() {
+        if (player[this.layer].points.gte(1000)) {
+            return `+<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}`
+        } else if (temp[this.layer].getResetGain.gte(100)) {
+            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}`
+        } else {
+            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}<br><br>
+            Next at ${format(temp[this.layer].getNextAt)} ${layers[this.layer].baseResource}`
+        }
+    },
     gainMult() {
         mult = new Decimal(1);
+        if (hasUpgrade("clickyes", 21)) mult = mult.mul(upgradeEffect("clickyes", 21));
         return mult
     },
     gainExp() {
@@ -527,24 +585,104 @@ addLayer("clickyes", {
     layerShown() {
         return (hasUpgrade("spam", 33) && hasUpgrade("build", 23) && player["tw"].points.gte("1e150")) || hasAchievement("ach", 22)
     },
-    branches: ["tw", "spam"],
-    doReset(resettingLayer) {
-        if (resettingLayer == "clickyes") {
-            layerDataReset("dev");
-            layerDataReset("tw");
-            layerDataReset("build");
-            up = player.spam.upgrades;
-            layerDataReset("spam", ["milestones"]);
-            if (up.includes(11)) {
-                player.spam.upgrades = [11]
-            }
-        }
-    },
+    branches: [["tw", 2], ["spam", 1]],
     upgrades: {
         11: {
             title: "/click yes spam",
-            description: "Multiply your TextWallers by 10x and double your spammers.",
+            description: "Multiply your TextWallers by 10x and triple your spammers.",
             cost: new Decimal(1)
+        },
+        12: {
+            title: "Click Yes Exports",
+            description: "Raise your characters gain by ^1.025, multiply your development points, TextWallers by 5x and multiply your builders by 1.4x.",
+            cost: new Decimal(3),
+            unlocked() {
+                return hasUpgrade("clickyes", 11)
+            }
+        },
+        13: {
+            title: "Blue Shep",
+            description: "Raise your spammers by ^1.02 and multiply your TextWallers based on your total yes button clicks.",
+            cost: new Decimal(5),
+            effect() {
+                return player[this.layer].total.add(1.5).pow(6)
+            },
+            effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
+            unlocked() {
+                return hasUpgrade("clickyes", 12)
+            }
+        },
+        21: {
+            title: "Giant Click Yes Sign",
+            description: "Multiply your yes button clicks based on your characters.",
+            cost: new Decimal(6),
+            effect() {
+                return player.points.lt("1e1000") ? new Decimal(1) : player.points.add(10).log10().sub(1000).pow(0.15)
+            },
+            effectDisplay() { return `${format(upgradeEffect(this.layer, this.id))}x` },
+            unlocked() {
+                return hasUpgrade("clickyes", 13)
+            }
+        },
+        22: {
+            title: "Yellow Shep",
+            description: "Unlock Click Yes Challenges.",
+            cost: new Decimal(18),
+            unlocked() {
+                return hasUpgrade("clickyes", 21)
+            }
+        }
+    },
+    milestones: {
+        0: {
+            requirementDescription: "1 yes button click",
+            effectDescription: "Automate the entirety of the developer layer.",
+            done() { return player[this.layer].points.gte(1) }
+        },
+        1: {
+            requirementDescription: "4 yes button clicks",
+            effectDescription: "You can buy max builders no matter what.",
+            done() { return player[this.layer].points.gte(4) }
+        },
+        2: {
+            requirementDescription: "10 yes button clicks",
+            effectDescription: "Automate TextWall layer upgrades and keep builder and spammer milestones on reset.",
+            done() { return player[this.layer].points.gte(10) }
+        }
+    },
+    challenges: {
+        11: {
+            name: "Click No",
+            challengeDescription: "Your developer points and TextWallers are raised by ^0.65.",
+            goalDescription: "1,000,000 spammers",
+            rewardDescription: "Multiply developer points by 15x, your yes button clicks by 2x and multiply your spammers based on your total yes button clicks.",
+            canComplete() { return player.spam.points.gte("1e6") },
+            rewardEffect() {
+                return player[this.layer].total.add(1.5).pow(3)
+            },
+            rewardDisplay() { return `${format(challengeEffect(this.layer, this.id))}x` },
+            unlocked() {
+                return hasUpgrade("clickyes", 22)
+            }
+        }
+    },
+    tabFormat: {
+        "Main": {
+            content: [
+                "main-display",
+                "prestige-button",
+                "milestones",
+                "upgrades"
+            ]
+        },
+        "Challenges": {
+            content: [
+                "main-display",
+                "challenges"
+            ],
+            unlocked() {
+                return hasUpgrade("clickyes", 22)
+            }
         }
     }
 });
@@ -581,7 +719,7 @@ addLayer("ach", {
             tooltip: "Reset for either Builders or Spammers."
         },
         15: {
-            name: "Both.",
+            name: "Now it isn't a choice!",
             done() { return player["build"].unlocked && player["spam"].unlocked },
             tooltip: "Unlock both Builders and Spammers."
         },
@@ -594,7 +732,12 @@ addLayer("ach", {
             name: "Should we make a game?",
             done() { return player["clickyes"].points.gte(1) },
             tooltip: "Reset for yes button clicks.<br>REWARD: Builder layer and spammer layer no longer increase eachother's requirements.",
-            image: "/ach/22.png"
+            image: "./ach/22.png"
+        },
+        23: {
+            name: "Why are my characters softcapped?",
+            done() { return player.points.gte("1e1000") },
+            tooltip: "Get 1e1000 characters."
         }
     },
     tabFormat: [
