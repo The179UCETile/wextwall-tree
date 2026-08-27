@@ -36,7 +36,7 @@ var colors = {
 		1: "#f0f000",
 		2: "#c0c000",
 		3: "#808000",
-		color: "#e0e080",
+		color: "#d0d060",
 		points: "#e0e040",
 		locked: "#ffbf7f",
 		background: "#fffce5",

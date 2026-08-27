@@ -30,16 +30,10 @@ addLayer("dev", {
         {key: "d", description: "D: Reset for development points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
-    doReset(resettingLayer) {
-        if (hasUpgrade("dev", 11) && resettingLayer != "dev") {
-            layerDataReset("dev");
-            player["dev"].upgrades = [11];
-        }
-    },
     upgrades: {
         11: {
             title: "Start development on TextWall",
-            description: "Start generating characters at a rate of 1/s [PERMANENT]",
+            description: "Start generating characters at a rate of 1/s.",
             cost: new Decimal(1)
         },
         12: {
@@ -146,7 +140,7 @@ addLayer("tw", {
         12: {
             title: "User Invitation",
             description: "Multiply your characters based on your TextWallers.",
-            cost: new Decimal(5),
+            cost: new Decimal(4),
             effect() {
                 return player[this.layer].points.add(1.5).pow(0.375)
             },
@@ -182,7 +176,7 @@ addLayer("tw", {
         22: {
             title: "Development Self-Synergy",
             description: "Multiply your development points based on itself.",
-            cost: new Decimal(200),
+            cost: new Decimal(70),
             effect() {
                 return player["dev"].points.add(1.5).pow(0.09)
             },
@@ -194,7 +188,7 @@ addLayer("tw", {
         23: {
             title: "TextWallers Self-Synergy",
             description: "Multiply your TextWallers based on itself.",
-            cost: new Decimal(5000),
+            cost: new Decimal(1000),
             effect() {
                 return player[this.layer].points.add(10).log10().pow(0.95)
             },
@@ -206,15 +200,15 @@ addLayer("tw", {
         31: {
             title: "Generic Boost",
             description: "Double your characters, development points and TextWallers.",
-            cost: new Decimal(20000),
+            cost: new Decimal(5000),
             unlocked() {
                 return hasUpgrade("tw", 23)
             }
         },
         32: {
-            title: "Click Yes",
-            description: "Unlock the click yes layer. [TBA]",
-            cost: new Decimal("5e6"),
+            title: "Builders and Spammers",
+            description: "Unlock the builder layer and spammer layer. [TBA]",
+            cost: new Decimal("1e6"),
             unlocked() {
                 return hasUpgrade("tw", 31)
             }
