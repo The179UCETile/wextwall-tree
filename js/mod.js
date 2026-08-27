@@ -18,7 +18,8 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.0 - Release</h3><br>
-		- Added development layer and TextWall layer.<br>`
+		- Added development layer and TextWall layer.<br>
+		- Endgame: "Builders and Spammers" upgrade<br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -57,12 +58,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Endgame: 1e11 TextWallers"
+	"Endgame: \"Builders and Spammers\" upgrade"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player["tw"].points.gte("1e11")
+	return hasUpgrade("tw", 32)
 }
 
 
