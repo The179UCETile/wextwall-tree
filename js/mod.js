@@ -49,6 +49,10 @@ function getPointGen() {
 	if (hasUpgrade("tw", 11)) gain = gain.mul(4);
 	if (hasUpgrade("tw", 12)) gain = gain.times(upgradeEffect("tw", 12));
   if (hasUpgrade("tw", 31)) gain = gain.mul(2);
+	gain = gain.mul(temp["build"].effect[0]);
+  if (hasUpgrade("spam", 11)) gain = gain.mul(8);
+	if (hasUpgrade("spam", 12)) gain = gain.times(upgradeEffect("spam", 12));
+  if (hasUpgrade("build", 13)) gain = gain.pow(1.02);
 	return gain
 }
 

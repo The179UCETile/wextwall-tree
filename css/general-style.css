@@ -20,6 +20,10 @@ h1, h2, h3, b, input {
 	cursor: not-allowed;
 }
 
+.ach.locked {
+	visibility: visible !important;
+}
+
 /* Can meens can be clicked/bought/etc */
 .can {
 	cursor: pointer;
