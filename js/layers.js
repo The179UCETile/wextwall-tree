@@ -847,32 +847,38 @@ addLayer("ach", {
         11: {
             name: "The beginning",
             done() { return hasUpgrade("dev", 11) },
-            tooltip: "Start generating characters."
+            tooltip: "Start generating characters.",
+            image: "./ach/placeholder.png"
         },
         12: {
             name: "hello and welcome",
             done() { return player.tw.points.gte(1) },
-            tooltip: "Reset for TextWallers."
+            tooltip: "Reset for TextWallers.",
+            image: "./ach/12.png"
         },
         13: {
             name: "That's a lot of TextWallers",
             done() { return player["tw"].points.gte("1e6") },
-            tooltip() { return `Get ${format("1e6")} TextWallers.` }
+            tooltip() { return `Get ${format("1e6")} TextWallers.` },
+            image: "./ach/placeholder.png"
         },
         14: {
             name: "Which one?",
             done() { return player["build"].points.gte(1) || player["spam"].points.gte(1) },
-            tooltip: "Reset for either Builders or Spammers."
+            tooltip: "Reset for either Builders or Spammers.",
+            image: "./ach/placeholder.png"
         },
         15: {
             name: "Now it isn't a choice!",
             done() { return player["build"].unlocked && player["spam"].unlocked },
-            tooltip: "Unlock both Builders and Spammers."
+            tooltip: "Unlock both Builders and Spammers.",
+            image: "./ach/placeholder.png"
         },
         21: {
             name: "<span style='font-size:0.8em'>I don't think the server can handle this many TextWallers</span>",
             done() { return player["tw"].points.gte("1e100") },
-            tooltip() { return `Get ${format("1e100")} TextWallers.` }
+            tooltip() { return `Get ${format("1e100")} TextWallers.` },
+            image: "./ach/placeholder.png"
         },
         22: {
             name: "Should we make a game?",
@@ -881,9 +887,16 @@ addLayer("ach", {
             image: "./ach/22.png"
         },
         23: {
-            name: "Why are my development points softcapped?",
-            done() { return player.dev.points.gte("1e1000") },
-            tooltip() { return `Get ${format("1e1000")} development points.` }
+            name: "Ultimate disaster",
+            done() { return player.tw.points.gte("1e666") },
+            tooltip() { return `Get ${format("1e666")} TextWallers.` },
+            image: "./ach/23.png"
+        },
+        31: {
+            name: "Vector's Intermediate Illion",
+            done() { return player.tw.points.gte("1e121301328") },
+            tooltip() { return `Get ${format("1e121301328")} TextWallers. (most likely unobtainable rn)` },
+            image: "./ach/31.png"
         }
     },
     tabFormat: [

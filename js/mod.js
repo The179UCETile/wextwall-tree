@@ -12,11 +12,13 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.1",
+	num: "0.1.1",
 	name: "Yes Button",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h4>v0.1.1</h4>
+		- Changed an achievement and added images to some achievements (and placeholder ones were used for ones that don't)<br>
 	<h3>v0.1 - Yes Button</h3><br>
 		- Added the builder, spammer and click yes layer.<br>
 		- (Slightly) changed the CSS.<br>
