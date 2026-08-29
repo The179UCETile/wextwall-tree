@@ -661,5 +661,3 @@ function loadVue() {
 		},
 	})
 }
-
- 

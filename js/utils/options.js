@@ -7,7 +7,7 @@ function getStartOptions() {
 		autosave: true,
 		msDisplay: "always",
 		theme: "dark",
-		hqTree: false,
+		hqTree: true,
 		offlineProd: true,
 		hideChallenges: false,
 		showStory: true,
@@ -15,6 +15,7 @@ function getStartOptions() {
 		oldStyle: false,
 		forceTooltips: true,
 		hideMilestonePopups: false,
+		badNotation: "none"
 	}
 }
 
@@ -79,3 +80,32 @@ function milestoneShown(layer, id) {
 }
 
 let formatOption = (opt) => opt ? 'ON' : 'OFF'
+
+const BADNOTATION_DISPLAYS = ["None", "Grand Button Incr.", "True 179uc", "Shit standard", "Shit standard 2", "Points Progression", "Mid notation", "Vector's standard", "New vector's standard", "Old setsumi's standard", "Diamond's notation", "Merging Legends", "Denutation"];
+
+const BADNOTATION_SETTINGS = ["none", "GrandButtonIncrementalStandard", "True179ucStandard", "CrapStandard", "CrapStandard2", "PointsProgressionStandard", "Mid", "VectorStandard", "NewVectorStandard", "OldSetsumiStandard", "Ultimer", "MergingLegendsStandard", "Denutation"];
+
+function loadBadNotation() {
+	if (document.getElementById("badNotationSelect")) {
+		while (document.getElementById("badNotationSelect").firstChild) {
+  		document.getElementById("badNotationSelect").removeChild(document.getElementById("badNotationSelect").firstChild);
+		}
+	};
+	for (let i in BADNOTATION_DISPLAYS) {
+		let notation = BADNOTATION_SETTINGS[i];
+		let option = document.createElement("option");
+		option.innerText = BADNOTATION_DISPLAYS[i];
+		if (options.badNotation == notation) {
+			option.setAttribute("selected", "")
+		};
+		document.getElementById("badNotationSelect").appendChild(option);
+	};
+	document.getElementById("badNotationSelect").addEventListener("input", () => {
+		options.badNotation = BADNOTATION_SETTINGS[BADNOTATION_DISPLAYS.indexOf(document.getElementById("badNotationSelect").value)];
+	});
+}
+setInterval(() => {
+	if (document.getElementById("badNotationSelect")) {
+		loadBadNotation();
+	}
+}, 150)

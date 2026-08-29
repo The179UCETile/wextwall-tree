@@ -135,7 +135,8 @@ var systemComponents = {
         <br>
         The Modding Tree <a v-bind:href="'https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md'" target="_blank" class="link" v-bind:style = "{'font-size': '14px', 'display': 'inline'}" >{{TMT_VERSION.tmtNum}}</a> by Acamaeda and FlamemasterNXF
         <br>
-        The Prestige Tree made by Jacorb and Aarex
+        The Prestige Tree made by Jacorb and Aarex<br>
+				999qi's website on <a class="link" href="https://historyoftextwall.neocities.org/" target="_blank" v-bind:style="{'font-size': '14px', 'display': 'inline'}">the history of TextWall</a> was taken as a reference
 		<br><br>
 		<div class="link" onclick="showTab('changelog-tab')">Changelog</div><br>
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
@@ -169,10 +170,14 @@ var systemComponents = {
             <tr>
                 <td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{ options.hideChallenges?"HIDDEN":"SHOWN" }}</button></td>
                 <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{ options.forceOneTab?"ALWAYS":"AUTO" }}</button></td>
-				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
+								<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
 				</tr> 
 			<tr>
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">Show Milestone Popups: {{ formatOption(!options.hideMilestonePopups) }}</button></td>
+                <td colspan="2"><div class="opt" id="badNotationOption">
+									<p>Bad notation:<br>
+									<select id="badNotationSelect"></select></p>
+								</div></td>
             </tr>
         </table>`
     },

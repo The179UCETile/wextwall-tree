@@ -40,9 +40,11 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b))
 }
 
-function format(decimal, precision = 2, small) {
+function format(decimal, precision = 2, small, forceNotation) {
     small = small || modInfo.allowSmall
     decimal = new Decimal(decimal)
+    notation = forceNotation ?? options.badNotation;
+    if (notation != "none") return BadNotations[notation]?.format(decimal, {isPrecision: false, decimals: precision, fallbackNotation: function(n){return format(n, precision, small, "none")}});
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
         player.hasNaN = true;
         return "NaN"
@@ -74,6 +76,7 @@ function format(decimal, precision = 2, small) {
 
 function formatWhole(decimal) {
     decimal = new Decimal(decimal)
+    if (options.badNotation != "none") return format(decimal.round())
     if (decimal.gte(1e9)) return format(decimal, 2)
     if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2)
     return format(decimal, 0)

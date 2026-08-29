@@ -12,14 +12,19 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Release",
+	num: "0.1",
+	name: "Yes Button",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.1 - Yes Button</h3><br>
+		- Added the builder, spammer and click yes layer.<br>
+		- (Slightly) changed the CSS.<br>
+		- Added achievements.<br>
+		- Endgame: Completed challenge "July 2021 DDoS Attack" twice.<br>
 	<h3>v0.0 - Release</h3><br>
 		- Added development layer and TextWall layer.<br>
-		- Endgame: "Builders and Spammers" upgrade<br>`
+		- Endgame: "Builders and Spammers" upgrade.<br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -54,6 +59,9 @@ function getPointGen() {
 	if (hasUpgrade("spam", 12)) gain = gain.times(upgradeEffect("spam", 12));
   if (hasUpgrade("build", 13)) gain = gain.pow(1.02);
   if (hasUpgrade("clickyes", 12)) gain = gain.pow(1.025);
+	if (challengeCompletions("clickyes", 21) >= 1) gain = gain.pow(1.05);
+  if (inChallenge("clickyes", 21)) gain = gain.pow(0.55);
+  if (inChallenge("clickyes", 31)) gain = gain.pow(0.5);
 	return gain
 }
 
@@ -63,12 +71,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Endgame: \"Builders and Spammers\" upgrade"
+	"Endgame: Completed challenge \"July 2021 DDoS Attack\" twice"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade("tw", 32)
+	return challengeCompletions("clickyes", 31) >= 2
 }
 
 
