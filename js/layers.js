@@ -275,7 +275,7 @@ addLayer("tw", {
         },
         32: {
             title: "Builders and Spammers",
-            description: "Unlock the builder layer and spammer layer. [TBA]",
+            description: "Unlock the builder layer and spammer layer.",
             cost: new Decimal("1e6"),
             unlocked() {
                 return hasUpgrade("tw", 31)
