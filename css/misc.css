@@ -51,6 +51,7 @@
     color: var(--points);
     content: attr(tooltip);
     font-size:14px;
+    word-wrap: break-word;
 
 }
 
