@@ -394,6 +394,7 @@ addLayer("build", {
             const keep = [];
             if (hasMilestone("clickyes", 0)) keep.push("milestones");
             if (hasAchievement("ach", 24)) keep.push("milestones");
+            if (hasMilestone("lime", 0)) keep.push("upgrades");
             layerDataReset("build", keep)
         }
     },
@@ -527,6 +528,7 @@ addLayer("spam", {
             const keep = [];
             if (hasMilestone("clickyes", 0)) keep.push("milestones");
             if (hasAchievement("ach", 24)) keep.push("milestones");
+            if (hasMilestone("lime", 0)) keep.push("upgrades");
             layerDataReset("spam", keep)
         }
     },
