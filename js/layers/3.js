@@ -94,7 +94,7 @@ addLayer("x", {
     tabFormat: {
         "Multiplier": [
             "main-display",
-            ["display-text", function() { return "You are gaining " + format(typeof mg !== 'undefined' ? mg : 0) + " multiplier per second" }],
+            ["display-text", function() { return "You are gaining " + format(typeof player.x.points !== 'undefined' ? player.x.points : 0) + " multiplier per second" }],
             "blank",
             "upgrades"
         ],
