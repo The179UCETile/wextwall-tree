@@ -451,7 +451,7 @@ addLayer("build", {
         },
         31: {
             title: "Zalan145",
-            description: "Improve \"General Boost\" builder boost and the\"Acceleration IV\" upgrade.",
+            description: "Improve \"General Boost\" builder boost and the \"Acceleration IV\" upgrade.",
             cost: new Decimal("1e17"),
             unlocked() {
                 return hasUpgrade("lime", 42)
