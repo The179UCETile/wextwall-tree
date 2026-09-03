@@ -176,7 +176,7 @@ var systemComponents = {
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">Show Milestone Popups: {{ formatOption(!options.hideMilestonePopups) }}</button></td>
                 <td colspan="2"><div class="opt" id="badNotationOption">
 									<p>Bad notation:<br>
-									<select id="badNotationSelect"></select></p>
+									<select id="badNotationSelect" v-bind:style='{"font-size": "0.9em"}'></select></p>
 								</div></td>
             </tr>
         </table>`
