@@ -24,12 +24,16 @@ addLayer("dev", {
     	if (hasUpgrade("build", 21)) mult = mult.mul(5);
     	if (hasUpgrade("clickyes", 11)) mult = mult.mul(3);
     	if (hasUpgrade("clickyes", 12)) mult = mult.mul(5);
+    	if (hasUpgrade("bzuki", 13)) mult = mult.mul(upgradeEffect("bzuki", 13));
+    	//if (hasUpgrade("cyod", 11)) mult = mult.mul(upgradeEffect("cyod", 11));
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         let exp = new Decimal(1);
     	if (hasUpgrade("spam", 23)) exp = exp.mul(1.015);
     	if (challengeCompletions("clickyes", 11) >= 1) exp = exp.mul(1.05);
+    	if (hasUpgrade("bzuki", 11)) exp = exp.mul(1.05);
+    	if (hasUpgrade("lime", 11)) exp = exp.mul(1.075);
         if (inChallenge("clickyes", 11)) exp = exp.mul(0.65);
         if (inChallenge("clickyes", 31)) exp = exp.mul(0.5);
         return exp
@@ -39,18 +43,19 @@ addLayer("dev", {
         {key: "d", description: "D: Reset for development points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
-    autoUpgrade() {return hasUpgrade("build", 11) || hasMilestone("clickyes", 0)},
+    autoUpgrade() {return hasUpgrade("build", 11) || hasMilestone("clickyes", 0) || hasAchievement("ach", 24)},
     doReset(resettingLayer) {
         if (resettingLayer != "dev") {
             const keep = [];
             if (hasMilestone("build", 0)) keep.push("upgrades");
             if (hasMilestone("spam", 0)) keep.push("upgrades");
             if (hasMilestone("clickyes", 0)) keep.push("upgrades");
+            if (hasAchievement("ach", 24)) keep.push("upgrades");
             layerDataReset("dev", keep)
         }
     },
     passiveGeneration() {
-        return hasUpgrade("spam", 11) || hasMilestone("clickyes", 0) ? 1 : 0
+        return hasUpgrade("spam", 11) || hasMilestone("clickyes", 0)  || hasAchievement("ach", 24) ? 1 : 0
     },
     softcap: new Decimal("1e1000"),
     softcapPower: new Decimal(0.675),
@@ -153,9 +158,9 @@ addLayer("tw", {
     resource: "TextWallers",
     baseResource: "development points",
     baseAmount() {return player["dev"].points},
-    autoUpgrade() {return hasMilestone("clickyes", 1)},
+    autoUpgrade() {return hasMilestone("clickyes", 1) || hasAchievement("ach", 24)},
     passiveGeneration() {
-        return hasMilestone("clickyes", 3) ? 1 : 0
+        return hasMilestone("clickyes", 3) || hasAchievement("ach", 24) ? 1 : 0
     },
     type: "normal",
     exponent: 0.5,
@@ -170,13 +175,17 @@ addLayer("tw", {
     	if (hasUpgrade("clickyes", 11)) mult = mult.mul(10);
     	if (hasUpgrade("clickyes", 12)) mult = mult.mul(5);
     	if (hasUpgrade("clickyes", 13)) mult = mult.mul(upgradeEffect("clickyes", 13));
+    	if (hasUpgrade("bzuki", 13)) mult = mult.mul(upgradeEffect("bzuki", 13));
+        mult = mult.mul(buyableEffect("bzuki", 12)[2]);
+    	//if (hasUpgrade("cyod", 21)) mult = mult.mul(upgradeEffect("cyod", 21));
         return mult
     },
     gainExp() {
         exp = new Decimal(1);
+    	if (hasUpgrade("bzuki", 11)) exp = exp.mul(1.05);
+	    if (challengeCompletions("clickyes", 31) >= 1) exp = exp.mul(challengeEffect("clickyes", 31)[1]);
         if (inChallenge("clickyes", 11)) exp = exp.mul(0.65);
         if (inChallenge("clickyes", 31)) exp = exp.mul(0.5);
-	    if (challengeCompletions("clickyes", 31) >= 1) exp = exp.mul(challengeEffect("clickyes", 31)[1]);
         return exp
     },
     row: 1,
@@ -189,6 +198,13 @@ addLayer("tw", {
     branches: ["dev"],
     softcap: new Decimal("1e9"),
     softcapPower: new Decimal("0.7"),
+    doReset(resettingLayer) {
+        if (resettingLayer != "tw") {
+            const keep = [];
+            if (hasAchievement("ach", 24)) keep.push("upgrades");
+            layerDataReset("tw", keep)
+        }
+    },
     upgrades: {
         11: {
             title: "<s>Nametags</s> Registration",
@@ -314,10 +330,19 @@ addLayer("build", {
         if (hasUpgrade("clickyes", 23)) mult = mult.mul(upgradeEffect("clickyes", 23)[1]);
         if (hasUpgrade("clickyes", 31)) mult = mult.mul(upgradeEffect("clickyes", 31)[0]);
         if (hasUpgrade("dev", 32)) mult = mult.mul(upgradeEffect("dev", 32));
+        if (hasUpgrade("bzuki", 11)) mult = mult.mul(1.4);
+        if (hasUpgrade("bzuki", 22)) mult = mult.mul(2);
+        mult = mult.mul(buyableEffect("bzuki", 12)[1]);
+        if (hasUpgrade("bzuki", 33)) mult = mult.mul(upgradeEffect("bzuki", 33));
+        if (hasUpgrade("lime", 11)) mult = mult.mul(2);
+        if (challengeCompletions("lime", 11) >= 1) mult = mult.mul(challengeEffect("lime", 11)[2]);
+        //if (hasUpgrade("cyod", 34)) mult = mult.mul(upgradeEffect("cyod", 34));
         if (inChallenge("clickyes", 21)) mult = mult.mul(0.75);
         if (inChallenge("clickyes", 31)) mult = mult.mul(0.5);
+        if (inChallenge("lime", 11)) mult = mult.div(100);
         return mult
     },
+    autoUpgrade() {return hasMilestone("bzuki", 2) || hasMilestone("lime", 0)},
     row: 2,
     hotkeys: [
         {key: "b", description: "B: Reset for builders", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
@@ -334,10 +359,12 @@ addLayer("build", {
         let softcap = new Decimal(17);
         if (hasMilestone("clickyes", 2)) softcap = softcap.add(5);
         if (hasUpgrade("clickyes", 23)) softcap = softcap.add(upgradeEffect("clickyes", 23)[0]);
-        return softcap;
+        return [softcap, new Decimal(25000)];
     },
     buildEffectSoftcapPower() {
-        return Decimal.sub(1, temp[this.layer].buildEffectSoftcap.div(17).recip().div(5));
+        let power = temp[this.layer].buildEffectSoftcap[0].div(17).recip().div(5);
+        if (power.lte(0.05)) power = Decimal.sub(0.05, Decimal.sub(0.05, power).pow(2))
+        return [Decimal.sub(1, power), new Decimal(0.5)];
     },
     effect() {
         if (!player[this.layer].unlocked) return [new Decimal(1), new Decimal(1), new Decimal(1), new Decimal(0)];
@@ -346,8 +373,11 @@ addLayer("build", {
             actualBuilders = actualBuilders.add(player[this.layer].total.plus(1).log(5).pow(1.4))
         };
         let softcap = temp[this.layer].buildEffectSoftcap;
-        if (actualBuilders.gte(softcap)) {
-            actualBuilders = actualBuilders.sub(softcap).pow(temp[this.layer].buildEffectSoftcapPower).add(softcap);
+        if (actualBuilders.gte(softcap[0])) {
+            actualBuilders = actualBuilders.sub(softcap[0]).pow(temp[this.layer].buildEffectSoftcapPower[0]).add(softcap[0]);
+        }
+        if (actualBuilders.gte(softcap[1])) {
+            actualBuilders = actualBuilders.div(softcap[1]).pow(temp[this.layer].buildEffectSoftcapPower[1]).mul(softcap[1]);
         }
         let eff = [Decimal.pow(3, actualBuilders),
             Decimal.pow(2, actualBuilders),
@@ -356,15 +386,22 @@ addLayer("build", {
         return eff;
     },
     effectDescription() {
-        return `which are boosting characters by ${format(temp[this.layer].effect[0])}x, development points by ${format(temp[this.layer].effect[1])}x and TextWallers by ${format(temp[this.layer].effect[2])}x based on your best builders${hasUpgrade("build", 12) ? " and total builders" : ""}.${temp[this.layer].effect[3].gte(temp[this.layer].buildEffectSoftcap) ? " <span style='font-size:0.75em'>(softcapped)</span>" : ""}`
+        return `which are boosting characters by ${format(temp[this.layer].effect[0])}x, development points by ${format(temp[this.layer].effect[1])}x and TextWallers by ${format(temp[this.layer].effect[2])}x based on your best builders${hasUpgrade("build", 12) ? " and total builders" : ""}.${temp[this.layer].effect[3].gte(temp[this.layer].buildEffectSoftcap[0]) || temp[this.layer].effect[3].gte(temp[this.layer].buildEffectSoftcap[1]) ? ` <span class='softcap'>(softcapped${temp[this.layer].effect[3].gte(temp[this.layer].buildEffectSoftcap[1]) ? "<sup>2</sup>" : ""})</span>` : ""}`
     },
     increaseUnlockOrder: ["spam"],
     doReset(resettingLayer) {
         if (resettingLayer != "build" && resettingLayer != "spam") {
             const keep = [];
             if (hasMilestone("clickyes", 0)) keep.push("milestones");
+            if (hasAchievement("ach", 24)) keep.push("milestones");
             layerDataReset("build", keep)
         }
+    },
+    resetsNothing() {
+        return hasMilestone("bzuki", 3) || hasMilestone("lime", 0)
+    },
+    autoPrestige() {
+        return hasMilestone("bzuki", 3) || hasMilestone("lime", 0)
     },
     upgrades: {
         11: {
@@ -411,6 +448,14 @@ addLayer("build", {
             unlocked() {
                 return hasUpgrade("build", 22)
             }
+        },
+        31: {
+            title: "Zalan145",
+            description: "Improve \"General Boost\" builder boost and the\"Acceleration IV\" upgrade.",
+            cost: new Decimal("1e17"),
+            unlocked() {
+                return hasUpgrade("lime", 42)
+            }
         }
     },
     milestones: {
@@ -450,14 +495,21 @@ addLayer("spam", {
     	if (hasUpgrade("clickyes", 11)) mult = mult.mul(3);
     	if (challengeCompletions("clickyes", 11) >= 1) mult = mult.mul(challengeEffect("clickyes", 11));
         if (hasUpgrade("clickyes", 31)) mult = mult.mul(upgradeEffect("clickyes", 31)[1]);
+        if (hasUpgrade("bzuki", 11)) mult = mult.mul(15);
+        if (hasUpgrade("lime", 11)) mult = mult.mul(25);
         return mult
     },
     gainExp() {
         exp = new Decimal(1);
     	if (hasUpgrade("clickyes", 13)) exp = exp.mul(1.02);
+    	if (hasUpgrade("bzuki", 12)) exp = exp.mul(1.05);
         if (inChallenge("clickyes", 21)) exp = exp.mul(0.55);
         if (inChallenge("clickyes", 31)) exp = exp.mul(0.5);
         return exp
+    },
+    autoUpgrade() {return hasMilestone("bzuki", 2) || hasMilestone("lime", 0)},
+    passiveGeneration() {
+        return hasMilestone("bzuki", 3) || hasMilestone("lime", 0) ? 1 : 0
     },
     row: 2,
     hotkeys: [
@@ -474,6 +526,7 @@ addLayer("spam", {
         if (resettingLayer != "build" && resettingLayer != "spam") {
             const keep = [];
             if (hasMilestone("clickyes", 0)) keep.push("milestones");
+            if (hasAchievement("ach", 24)) keep.push("milestones");
             layerDataReset("spam", keep)
         }
     },
@@ -529,7 +582,7 @@ addLayer("spam", {
         },
         23: {
             title: "Phrase Spam II",
-            description: "Raise your developer points by ^1.015.",
+            description: "Raise your development points by ^1.015.",
             cost: new Decimal("1e6"),
             unlocked() {
                 return hasUpgrade("spam", 22)
@@ -549,7 +602,7 @@ addLayer("spam", {
         },
         32: {
             title: "Spam Wave II",
-            description: "Multiply your developer points based on your best spammers. At this point you should be able to obtain builders.",
+            description: "Multiply your development points based on your best spammers. At this point you should be able to obtain builders.",
             cost: new Decimal("1e11"),
             effect() {
                 return player[this.layer].best.add(1.5).pow(0.55)
@@ -582,18 +635,36 @@ addLayer("spam", {
 });
 addLayer("clickyes", {
     name: "click yes",
-    symbol: "CY",
+    symbol: "Y",
     position: 0,
     startData() { return {
         unlocked: false,
 		points: new Decimal(0)
     }},
-    color: "#00FF00",
+    color() {
+        if (hasUpgrade("lime", 21)) return "#709070";
+        return "#00FF00";
+    },
     requires: new Decimal("1e150"),
-    resource: "yes button clicks",
+    resource() {
+        const chars = "ABCDEFGIHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        if (hasUpgrade("lime", 21)) return "yes button clicks".split("").map(a => a != " " && Math.random() < 0.5 ? chars[Math.floor(Math.random() * chars.length)] : a).join("");
+        return "yes button clicks";
+    },
     baseResource: "TextWallers",
     baseAmount() {return player["tw"].points},
-    type: "custom",
+    type() { 
+        if (hasUpgrade("lime", 21)) return "none";
+        return "custom";
+    },
+    autoUpgrade() {return hasUpgrade("lime", 21)},
+    update(diff) {
+        if (hasUpgrade("lime", 21)) {
+            player[this.layer].points = player[this.layer].points.add(upgradeEffect("lime", 21).mul(diff));
+            player[this.layer].total = player[this.layer].total.add(upgradeEffect("lime", 21).mul(diff));
+            player[this.layer].best = Decimal.max(player[this.layer].best, player[this.layer].points);
+        }
+    },
     logarithm: new Decimal("1e15"),
     getResetGain() {
         let thisLayer = layers[this.layer];
@@ -607,15 +678,15 @@ addLayer("clickyes", {
         return temp[this.layer].baseAmount.gte(layers[this.layer].requires)
     },
     prestigeNotify() {
-        return temp[this.layer].getResetGain.gte(player[this.layer].points.div(10)) && temp[this.layer].getResetGain.neq(0)
+        return !hasUpgrade("lime", 21) && temp[this.layer].getResetGain.gte(player[this.layer].points.div(10)) && temp[this.layer].getResetGain.neq(0)
     },
     prestigeButtonText() {
         if (player[this.layer].points.gte(1000)) {
-            return `+<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}`
+            return `+<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${temp[this.layer].resource}`
         } else if (temp[this.layer].getResetGain.gte(100)) {
-            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}`
+            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${temp[this.layer].resource}`
         } else {
-            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${layers[this.layer].resource}<br><br>
+            return `Reset for +<b>${formatWhole(temp[this.layer].getResetGain)}</b> ${temp[this.layer].resource}<br><br>
             Next at ${format(temp[this.layer].getNextAt)} ${layers[this.layer].baseResource}`
         }
     },
@@ -627,19 +698,40 @@ addLayer("clickyes", {
 	    if (challengeCompletions("clickyes", 31) >= 1) mult = mult.mul(challengeEffect("clickyes", 31)[0]);
         if (hasUpgrade("clickyes", 32)) mult = mult.mul(upgradeEffect("clickyes", 32));
         if (hasUpgrade("clickyes", 33)) mult = mult.mul(2);
+        if (hasUpgrade("bzuki", 11)) mult = mult.mul(2);
+        if (hasUpgrade("bzuki", 12)) mult = mult.mul(upgradeEffect("bzuki", 12));
+        mult = mult.mul(buyableEffect("bzuki", 12)[0]);
+        if (hasUpgrade("lime", 11)) mult = mult.mul(3);
+        if (hasUpgrade("lime", 12)) mult = mult.mul(3);
+        if (hasUpgrade("lime", 14)) mult = mult.mul(upgradeEffect("lime", 14));
+        //if (hasUpgrade("cyod", 13)) mult = mult.mul(upgradeEffect("cyod", 13));
+        //if (getBuyableAmount("cyod", 11).gte(1)) mult = mult.mul(buyableEffect("cyod", 11)[0]);
         return mult
     },
     gainExp() {
-        return new Decimal(1)
+        let exp = new Decimal(1);
+        if (hasUpgrade("bzuki", 43)) exp = exp.mul(1.025);
+        return exp
     },
     row: 3,
     hotkeys: [
-        {key: "y", description: "Y: Reset for yes button clicks", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "y", description: "Y: Reset for yes button clicks", onPress(){if (canReset(this.layer)) doReset(this.layer)}, unlocked(){return !hasUpgrade("lime", 21)}},
     ],
     layerShown() {
         return (hasUpgrade("spam", 33) && hasUpgrade("build", 23) && player["tw"].points.gte("1e100")) || hasAchievement("ach", 22)
     },
     branches: [["tw", 2], ["spam", 1]],
+    doReset(resettingLayer) {
+        if (resettingLayer != "clickyes") {
+            const keep = [];
+            if (hasMilestone("bzuki", 0)) keep.push("challenges");
+            if (hasMilestone("bzuki", 1)) keep.push("milestones");
+            if (hasMilestone("lime", 1)) keep.push("milestones");
+            if (hasUpgrade("lime", 21)) keep.push("challenges");
+            if (hasUpgrade("lime", 21)) keep.push("upgrades");
+            layerDataReset("clickyes", keep)
+        }
+    },
     upgrades: {
         11: {
             title: "/click yes spam",
@@ -656,7 +748,7 @@ addLayer("clickyes", {
         },
         13: {
             title: "Blue Shep",
-            description: "Raise your spammers by ^1.02 and multiply your TextWallers based on your total yes button clicks.",
+            description() { return `Raise your spammers by ^1.02 and multiply your TextWallers based on your total ${temp.clickyes.resource}.` },
             cost: new Decimal(8),
             effect() {
                 return player[this.layer].total.add(1.5).pow(7)
@@ -668,7 +760,7 @@ addLayer("clickyes", {
         },
         21: {
             title: "Giant Click Yes Sign",
-            description: "Multiply your yes button clicks based on your characters.",
+            description() { return `Multiply your ${temp.clickyes.resource} based on your characters.` },
             cost: new Decimal(15),
             effect() {
                 return player.points.add(10).log10().pow(0.0775)
@@ -687,18 +779,24 @@ addLayer("clickyes", {
             }
         },
         23: {
-            title: "CYOD",
-            description: "Delay the builder effect softcap based on your total yes button clicks and multiply your builders based on your total yes button clicks.",
+            title: "Super-Click Yes",
+            description() { return `Delay the builder effect softcap based on your total ${temp.clickyes.resource} and multiply your builders based on your total ${temp.clickyes.resource}.` },
             cost: new Decimal(85),
             effect() {
-                let eff = [player[this.layer].total.add(1.5).pow(0.5), player[this.layer].total.add(10).log10().pow(0.525)];
+                let yesButtonClickAmt = player[this.layer].total;
+                if (yesButtonClickAmt.gte("1e6")) yesButtonClickAmt = yesButtonClickAmt.sub("1e6").pow(0.75).add("1e6");
+                let eff = [yesButtonClickAmt.add(1.5).pow(0.5), yesButtonClickAmt.add(10).log10().pow(0.525)];
                 if (hasUpgrade("clickyes", 33)) {
                     eff[0] = eff[0].pow(0.65 / 0.5);
                     eff[1] = eff[1].pow(0.6 / 0.525)
-                }
+                };
+                if (false /*hasUpgrade("cyod", 22)*/) {
+                    eff[0] = eff[0].pow(0.7 / 0.65);
+                    eff[1] = eff[1].pow(0.7 / 0.6)
+                };
                 return eff;
             },
-            effectDisplay() { return `+${format(upgradeEffect(this.layer, this.id)[0])}, x${format(upgradeEffect(this.layer, this.id)[1])}` },
+            effectDisplay() { return `+${format(upgradeEffect(this.layer, this.id)[0])}, x${format(upgradeEffect(this.layer, this.id)[1])}${player[this.layer].points.gte("1e6") ? " <span class='softcap'>(softcapped)</span>" : ""}` },
             unlocked() {
                 return hasUpgrade("clickyes", 22)
             }
@@ -708,16 +806,24 @@ addLayer("clickyes", {
             description: "Multiply your builders based on your spammers and vice versa.",
             cost: new Decimal(150),
             effect() {
-                return [player.spam.points.add(10).log10().pow(0.085), Decimal.pow(1.625, player.build.points.add(1).pow(0.925))]
+                const ptsForEff = [player.spam.points, player.build.points];
+                if (player.spam.points.gte("1e5000")) {
+                    ptsForEff[0] = ptsForEff[0].div("1e5000").pow(0.45).mul("1e5000")
+                };
+                if (player.build.points.gte("20000")) {
+                    ptsForEff[1] = ptsForEff[1].div("20000").pow(0.4).mul("20000")
+                };
+                const eff = [ptsForEff[0].add(10).log10().pow(0.085), Decimal.pow(1.625, ptsForEff[1].add(1).pow(0.925))];
+                return eff;
             },
-            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id)[0])}, x${format(upgradeEffect(this.layer, this.id)[1])}` },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id)[0])}, x${format(upgradeEffect(this.layer, this.id)[1])}${player.spam.points.gte("1e5000") || player.build.points.gte("20000") ? " <span class='softcap'>(softcapped)</span>" : ""}` },
             unlocked() {
                 return hasUpgrade("clickyes", 23)
             }
         },
         32: {
             title() { return `Clicking Yes ${options.badNotation == "True179ucStandard" ? "179uc" : "179UCe"} Times` },
-            description: "Multiply your yes button clicks based on the amount of click yes layer upgrades bought.",
+            description() { return `Multiply your ${temp.clickyes.resource} based on the amount of click yes layer upgrades bought.` },
             cost: new Decimal(250),
             effect() {
                 return Decimal.pow(1.12, player[this.layer].upgrades.length);
@@ -729,7 +835,7 @@ addLayer("clickyes", {
         },
         33: {
             title: "CLICK YES CLICK YES",
-            description: "Improve \"CYOD\" and double your yes button clicks.",
+            description() { return `Improve "Super-Click Yes" and double your ${temp.clickyes.resource}.` },
             cost: new Decimal(1000),
             unlocked() {
                 return hasUpgrade("clickyes", 32)
@@ -742,26 +848,34 @@ addLayer("clickyes", {
             unlocked() {
                 return challengeCompletions("clickyes", 31) >= 1
             }
+        },
+        42: {
+            title: "Bzuki",
+            description: "Unlock the Bzuki layer.",
+            cost: new Decimal(25000),
+            unlocked() {
+                return challengeCompletions("clickyes", 31) >= 2
+            }
         }
     },
     milestones: {
         0: {
-            requirementDescription() { return `${formatWhole(1)} yes button click` },
-            effectDescription: "Automate the entirety of the developer layer and keep builder and spammer milestones on reset.",
+            requirementDescription() { return `${formatWhole(1)} ${temp.clickyes.resource}` },
+            effectDescription: "Automate the entirety of the development layer and keep builder and spammer milestones on reset.",
             done() { return player[this.layer].points.gte(1) }
         },
         1: {
-            requirementDescription() { return `${formatWhole(8)} yes button clicks` },
+            requirementDescription() { return `${formatWhole(8)} ${temp.clickyes.resource}` },
             effectDescription: "Automate TextWall layer upgrades.",
             done() { return player[this.layer].points.gte(8) }
         },
         2: {
-            requirementDescription() { return `${formatWhole(25)} yes button clicks` },
+            requirementDescription() { return `${formatWhole(25)} ${temp.clickyes.resource}` },
             effectDescription: "Nerf builder effect softcap.",
             done() { return player[this.layer].points.gte(25) }
         },
         3: {
-            requirementDescription() { return `${formatWhole(100)} yes button clicks` },
+            requirementDescription() { return `${formatWhole(100)} ${temp.clickyes.resource}` },
             effectDescription: "Automatically gain 100% of your TextWallers you get on reset per second.",
             done() { return player[this.layer].points.gte(100) }
         }
@@ -769,9 +883,9 @@ addLayer("clickyes", {
     challenges: {
         11: {
             name: "Click No",
-            challengeDescription: "Your developer points and TextWallers are raised by ^0.65.",
+            challengeDescription: "Your development points and TextWallers are raised by ^0.65.",
             goalDescription() { return `${format("1e10")} spammers` },
-            rewardDescription: "Raise your developer points by ^1.05, your yes button clicks by 2x and multiply your spammers based on your total yes button clicks.",
+            rewardDescription() { return `Raise your development points by ^1.05, your ${temp.clickyes.resource} by 2x and multiply your spammers based on your total ${temp.clickyes.resource}.` },
             canComplete() { return player.spam.points.gte("1e10") },
             rewardEffect() {
                 return player[this.layer].total.add(1.5).pow(3.5)
@@ -785,7 +899,7 @@ addLayer("clickyes", {
             name: "/click no spam",
             challengeDescription: "Your builders are multiplied by x0.75, your spammers and characters are raised by ^0.55.",
             goalDescription() { return `${format("1e19")} spammers` },
-            rewardDescription: "Multiply your yes button clicks based on your spammers and raise your characters by ^1.05.",
+            rewardDescription() { return `Multiply your ${temp.clickyes.resource} based on your spammers and raise your characters by ^1.05.` },
             canComplete() { return player.spam.points.gte("1e19") },
             rewardEffect() {
                 return player.spam.points.add(10).log10().pow(0.095)
@@ -800,12 +914,12 @@ addLayer("clickyes", {
             challengeDescription: "Raise your characters, development points, TextWallers, spammers by ^0.5 and your builders are multiplied by x0.5.",
             completionLimit: 5,
             goalDescription() { return `${format(new Decimal("1e10").mul(Decimal.pow(1000, new Decimal(challengeCompletions("clickyes", 31)).pow(1.5))))} spammers` },
-            rewardDescription: "Multiply your yes button clicks and raise your TextWallers based on challenge completions.",
+            rewardDescription() { return `Multiply your ${temp.clickyes.resource} and raise your TextWallers based on challenge completions.` },
             canComplete() { return player.spam.points.gte(new Decimal("1e10").mul(Decimal.pow(1000, new Decimal(challengeCompletions("clickyes", 31)).pow(1.5)))) },
             rewardEffect() {
-                return [Decimal.pow(1.4, challengeCompletions("clickyes", 31)), new Decimal(challengeCompletions("clickyes", 31)).div(20).add(1)]
+                return [Decimal.pow(1.4, challengeCompletions("clickyes", 31)), new Decimal([1, 1.05, 1.1, 1.15, 1.19, 1.23][challengeCompletions("clickyes", 31)])]
             },
-            rewardDisplay() { return `x${format(challengeEffect(this.layer, this.id)[0])} to yes button clicks, ^${format(challengeEffect(this.layer, this.id)[1])} to your TextWallers.` },
+            rewardDisplay() { return `x${format(challengeEffect(this.layer, this.id)[0])} to ${temp.clickyes.resource}, ^${format(challengeEffect(this.layer, this.id)[1])} to your TextWallers.` },
             unlocked() {
                 return challengeCompletions("clickyes", 21) >= 1
             }
@@ -824,6 +938,8 @@ addLayer("clickyes", {
         "Challenges": {
             content: [
                 "main-display",
+                "prestige-button",
+                ["display-text", function() { return `You have ${format(temp[this.layer].baseAmount)} ${layers[this.layer].baseResource}` }, {"margin": "5px 0", "display": "block", "width": "100%", "height": "20px"}],
                 "challenges"
             ],
             unlocked() {
@@ -832,6 +948,810 @@ addLayer("clickyes", {
         }
     }
 });
+addLayer("bzuki", {
+    name: "bzuki",
+    symbol: "Bz",
+    position: 0,
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#00CC78",
+    requires: new Decimal(15000),
+    resource: "Bzuki points",
+    baseResource() {return temp.clickyes.resource},
+    baseAmount() {return player.clickyes.points},
+    type: "normal",
+    exponent: 0.5,
+    gainMult() {
+        mult = new Decimal(1);
+        if (hasUpgrade("bzuki", 31)) mult = mult.mul(upgradeEffect("bzuki", 31)[0]);
+        if (hasUpgrade("bzuki", 41)) mult = mult.mul(upgradeEffect("bzuki", 41));
+        if (hasUpgrade("bzuki", 42)) mult = mult.mul(upgradeEffect("bzuki", 42));
+        if (hasUpgrade("lime", 11)) mult = mult.mul(1.5);
+        if (hasUpgrade("lime", 12)) mult = mult.mul(upgradeEffect("lime", 12));
+        if (getBuyableAmount("bzuki", 21).gte(1)) mult = mult.mul(buyableEffect("bzuki", 21)[1]);
+        if (hasUpgrade("lime", 32)) mult = mult.mul(upgradeEffect("lime", 32));
+        if (challengeCompletions("lime", 11) >= 1) mult = mult.mul(challengeEffect("lime", 11)[1]);
+        if (inChallenge("lime", 11)) mult = mult.div(100);
+        return mult
+    },
+    gainExp() {
+        exp = new Decimal(1);
+        return exp
+    },
+    row: 4,
+    hotkeys: [
+        {key: "B", description: "Shift + B: Reset for Bzuki points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown() {
+        return hasUpgrade("clickyes", 42) || hasAchievement("ach", 24)
+    },
+    branches: [["tw", 2], ["build", 1]],
+    doReset(resettingLayer) {
+        if (resettingLayer != "bzuki") {
+            const keep = [];
+            if (hasMilestone("lime", 2)) keep.push("milestones");
+            layerDataReset("bzuki", keep)
+        }
+    },
+    softcap: new Decimal("1e7"),
+    softcapPower: new Decimal(0.6),
+    upgrades: {
+        11: {
+            title: "A Veteran TextWaller",
+            description() { return `Raise your TextWallers and development points by ^1.05 and multiply your spamers by x15, builders by x1.4 and double your ${temp.clickyes.resource}.` },
+            cost: new Decimal(1)
+        },
+        12: {
+            title: "Acceleration",
+            description() { return `Multiply your ${temp.clickyes.resource} based on your total Bzuki points. Additionally raise your spammers by ^1.05.` },
+            cost: new Decimal(2),
+            effect() {
+                return player[this.layer].total.add(1.5).pow(0.4);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 11)
+            }
+        },
+        13: {
+            title: "Acceleration II",
+            description: "Multiply your TextWallers and development points based on your total Bzuki points.",
+            cost: new Decimal(4),
+            effect() {
+                return player[this.layer].total.add(1.5).pow(new Decimal("22").mul(player[this.layer].total.add(1).log10().add(1).pow(0.15)));
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 12)
+            }
+        },
+        21: {
+            title: "Patience is a Virtue",
+            description() { return `Multiply your ${temp.clickyes.resource} based on this layer's reset time.` },
+            cost: new Decimal(6),
+            effect() {
+                let time = new Decimal(player[this.layer].resetTime).div(60);
+                if (hasUpgrade("bzuki", 22)) time = time.mul(upgradeEffect("bzuki", 22));
+                time = time.mul(buyableEffect("bzuki", 11));
+                if (hasUpgrade("bzuki", 32)) time = time.mul(upgradeEffect("bzuki", 32));
+                if (hasUpgrade("lime", 12)) time = time.mul(4);
+                let eff = time.add(1).pow(0.5);
+                if (hasUpgrade("lime", 12)) eff = eff.pow(0.6 / 0.5);
+                return eff;
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 13)
+            }
+        },
+        22: {
+            title: "That's a steep increase in technology",
+            description: "The reset time in \"Patience is a Virtue\" goes faster based on the amount of upgrades bought in this layer. Additionally doubles your builders.",
+            cost: new Decimal(10),
+            effect() {
+                return Decimal.pow(1.2, player[this.layer].upgrades.length)
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 21)
+            }
+        },
+        23: {
+            title: "Buyables!!!",
+            description: "Unlock Bzuki buyables.",
+            cost: new Decimal(20),
+            unlocked() {
+                return hasUpgrade(this.layer, 22)
+            }
+        },
+        31: {
+            title: "Acceleration III",
+            description: "Multiply your Bzuki points based on your characters and vice versa.",
+            cost: new Decimal(100),
+            effect() {
+                let softcapStart = new Decimal("1e12");
+                if (hasUpgrade("lime", 34)) softcapStart = softcapStart.mul(upgradeEffect("lime", 34));
+                let eff = [player.points.add(1).log10().add(1).log10().add(1).pow(0.4), Decimal.pow("1e300", Decimal.pow(10, softcap(player[this.layer].total.log10(), softcapStart.log10(), new Decimal(0.6))).add(1).pow(0.5)), softcapStart];
+                if (inChallenge("lime", 11)) eff[1] = Decimal.pow(10, eff[1].log10().pow(0.25))
+                return eff;
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id)[0])} to Bzuki points, x${format(upgradeEffect(this.layer, this.id)[1])} to characters.${player.bzuki.total.gte(upgradeEffect(this.layer, this.id)[2]) ? " <span class='softcap'>(softcapped)</span>" : ""}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 23)
+            }
+        },
+        32: {
+            title: "Time Acceleration",
+            description() { return `Multiply "Patience is a Virtue" reset time based on your total ${temp.clickyes.resource}.` },
+            cost: new Decimal(600),
+            effect() {
+                return player.clickyes.total.add(10).log10().pow(0.65);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 31)
+            }
+        },
+        33: {
+            title: "Builders Booster",
+            description: "Multiply your builders based on your total Bzuki points.",
+            cost: new Decimal(2000),
+            effect() {
+                return player[this.layer].total.add(10).log10().pow(0.55);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 32)
+            }
+        },
+        41: {
+            title: "Yet Another Self-Boost",
+            description: "Multiply your Bzuki points based on itself.",
+            cost: new Decimal(10000),
+            effect() {
+                let eff = player[this.layer].total.add(10).log10().pow(0.8);
+                if (hasUpgrade("lime", 31)) eff = eff.pow(1.25 / 0.8);
+                return eff;
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 33)
+            }
+        },
+        42: {
+            title: "Acceleration IV",
+            description: "Multiply your Bzuki points based on your builders.",
+            cost: new Decimal(100000),
+            effect() {
+                let eff = player.build.points.add(10).log10().pow(0.6);
+                if (hasUpgrade("build", 31)) eff = Decimal.pow(10, softcap(player.build.points.add(1.5).pow(0.25).log10(), new Decimal("1e6"), new Decimal(0.9)));
+                return eff;
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 41)
+            }
+        },
+        43: {
+            title: "Finally a new layer",
+            description() { return `Unlock the lime.person layer. Additionally raise your ${temp.clickyes.resource} by ^1.025.` },
+            cost: new Decimal("1e7"),
+            unlocked() {
+                return hasUpgrade(this.layer, 42)
+            }
+        }
+    },
+    milestones: {
+        0: {
+            requirementDescription() { return `${formatWhole(5)} Bzuki points` },
+            effectDescription: "Keep your click yes challenges on reset.",
+            done() { return player[this.layer].points.gte(5) }
+        },
+        1: {
+            requirementDescription() { return `${formatWhole(10)} Bzuki points` },
+            effectDescription: "Keep your click yes milestones on reset.",
+            done() { return player[this.layer].points.gte(10) }
+        },
+        2: {
+            requirementDescription() { return `${formatWhole(25)} Bzuki points` },
+            effectDescription: "Automatically buy builder and spammer upgrades.",
+            done() { return player[this.layer].points.gte(25) }
+        },
+        3: {
+            requirementDescription() { return `${formatWhole(100)} Bzuki points` },
+            effectDescription: "Automatically gain 100% of your spammers you get on reset per second and automatically prestige for builders every tick.",
+            done() { return player[this.layer].points.gte(100) }
+        }
+    },
+    buyables: {
+        11: {
+            title: "Time Boosting",
+            cost(x) { return new Decimal(15).mul(Decimal.pow(2, x)) },
+            display() { return `Multiplying "Patience is a Virtue" reset time by x${format(this.effect())}.<br>
+                <b>Cost:</b> ${formatWhole(this.cost())} ${layers[this.layer].resource}<br>
+                <b>Amount:</b> ${formatWhole(getBuyableAmount(this.layer, this.id))}` },
+            effect() {
+                let amt = getBuyableAmount(this.layer, this.id);
+                if (hasUpgrade("lime", 13)) amt = amt.add(3);
+                return Decimal.pow(1.6, softcap(amt, new Decimal(75), new Decimal(0.775)))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                let purchases = Decimal.affordGeometricSeries(player[this.layer].points, 15, 2, getBuyableAmount(this.layer, this.id));
+                let cost = Decimal.sumGeometricSeries(purchases, 15, 2, getBuyableAmount(this.layer, this.id));
+                player[this.layer].points = player[this.layer].points.sub(cost);
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(purchases));
+            },
+            unlocked() {
+                return hasUpgrade("bzuki", 23) || hasUpgrade("lime", 22)
+            }
+        },
+        12: {
+            title: "General Boost",
+            cost(x) { return new Decimal(15).mul(Decimal.pow(2.5, x)) },
+            display() { return `Multiplying ${temp.clickyes.resource} by x${format(this.effect()[0])}, builders by x${format(this.effect()[1])} and TextWallers by x${format(this.effect()[2])}.<br>
+                <b>Cost:</b> ${format(this.cost())} ${layers[this.layer].resource}<br>
+                <b>Amount:</b> ${formatWhole(getBuyableAmount(this.layer, this.id))}` },
+            effect() {
+                let amt = getBuyableAmount(this.layer, this.id);
+                if (hasUpgrade("lime", 13)) amt = amt.add(3);
+                let builderBoost = amt.add(1).pow(0.3);
+                if (hasUpgrade("build", 31)) builderBoost = Decimal.pow(1.065, softcap(amt, new Decimal(100), new Decimal(0.9)));
+                return [Decimal.pow(1.6, softcap(amt, new Decimal(80), new Decimal(0.8))),
+                    builderBoost,
+                    Decimal.pow("1e100", amt.pow(1.35))
+                ]
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                let purchases = Decimal.affordGeometricSeries(player[this.layer].points, 15, 2.5, getBuyableAmount(this.layer, this.id));
+                let cost = Decimal.sumGeometricSeries(purchases, 15, 2.5, getBuyableAmount(this.layer, this.id));
+                player[this.layer].points = player[this.layer].points.sub(cost);
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(purchases));
+            },
+            unlocked() {
+                return hasUpgrade("bzuki", 23) || hasUpgrade("lime", 22)
+            }
+        },
+        21: {
+            title: "Further Boosts",
+            cost(x) { return new Decimal("1e14").mul(Decimal.pow(4, x)) },
+            display() { return `Multiplying lime.person points by x${format(this.effect()[0])} and your Bzuki points by x${format(this.effect()[1])} based on your builders.<br>
+                <b>Cost:</b> ${format(this.cost())} ${layers[this.layer].resource}<br>
+                <b>Amount:</b> ${formatWhole(getBuyableAmount(this.layer, this.id))}` },
+            effect() {
+                let amt = getBuyableAmount(this.layer, this.id);
+                return [Decimal.pow(1.3, softcap(amt, new Decimal(20), new Decimal(0.75))),
+                    player.build.points.add(10).log10().div(3).max(1).pow(softcap(amt.div(6.5), new Decimal(2.5), new Decimal(0.8)))
+                ]
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                let purchases = Decimal.affordGeometricSeries(player[this.layer].points, "1e14", 4, getBuyableAmount(this.layer, this.id));
+                let cost = Decimal.sumGeometricSeries(purchases, "1e14", 4, getBuyableAmount(this.layer, this.id));
+                player[this.layer].points = player[this.layer].points.sub(cost);
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(purchases));
+            },
+            unlocked() {
+                return hasUpgrade("lime", 22)
+            }
+        }
+    }
+});
+addLayer("lime", {
+    name: "lime.person",
+    symbol: "l.",
+    position: -1,
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#7EED56",
+    requires: new Decimal("1e7"),
+    resource: "lime.person points",
+    baseResource: "Bzuki points",
+    baseAmount() {return player.bzuki.points},
+    type: "normal",
+    exponent: 0.55,
+    gainMult() {
+        mult = new Decimal(1);
+        if (getBuyableAmount("bzuki", 21).gte(1)) mult = mult.mul(buyableEffect("bzuki", 21)[0]);
+        if (hasUpgrade("lime", 31)) mult = mult.mul(upgradeEffect("lime", 31));
+        if (challengeCompletions("lime", 11) >= 1) mult = mult.mul(challengeEffect("lime", 11)[0]);
+        return mult
+    },
+    gainExp() {
+        exp = new Decimal(1);
+        return exp
+    },
+    row: 5,
+    displayRow: 3,
+    hotkeys: [
+        {key: "l", description: "L: Reset for lime.person points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown() {
+        return hasUpgrade("bzuki", 43) || hasAchievement("ach", 32)
+    },
+    branches: [["tw", 2], ["build", 1]],
+    upgrades: {
+        11: {
+            title: "Typical Recovery Upgrade",
+            description() { return `Raise your development points by ^1.075, double your builders, multiply your spammers by x25, triple your ${temp.clickyes.resource} and multiply your Bzuki points by x1.5.` },
+            cost: new Decimal(1)
+        },
+        12: {
+            title: "Hyper-Booster",
+            description() { return `Triple your ${temp.clickyes.resource}, multiply your Bzuki points based on your total lime.person points, multiply your characters by x${format("1e200")} and improve the formula in "Patience is a Virtue".` },
+            cost: new Decimal(2),
+            effect() {
+                return softcap(player[this.layer].total, new Decimal("1e12"), new Decimal(0.5)).add(1).pow(0.5);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}${player[this.layer].total.gte("1e12") ? " <span class='softcap'>(softcapped)</span>" : ""}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 11)
+            }
+        },
+        13: {
+            title: "Hyper-Booster II",
+            description: "Multiply \"Patience is a Virtue\" time by x4 and add 3 extra levels to the Bzuki buyables.",
+            cost: new Decimal(4),
+            unlocked() {
+                return hasUpgrade(this.layer, 12)
+            }
+        },
+        14: {
+            title: "Hyper-Booster III",
+            description() { return `Multiply your ${temp.clickyes.resource} based on your total lime.person points.` },
+            cost: new Decimal(10),
+            effect() {
+                return player[this.layer].total.add(1).pow(0.8);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 13)
+            }
+        },
+        21: {
+            title: "Deca Quitin's Video That Ends It All",
+            description() { return `Remove the click yes reset button. To compensate, you passively gain ${temp.clickyes.resource} based on your total lime.person points again, your total Bzuki points and the expected amount of ${temp.clickyes.resource} gained on reset. Also keeps and automate all of your click yes upgrades and challenges.` },
+            style: {"width": "405px", "height": "405px", "border-radius": "90px", "font-size": "15px"},
+            cost: new Decimal(20),
+            effect() {
+                let eff = player[this.layer].total.add(1).pow(0.5).mul(player.bzuki.total.add(1.5).pow(0.1)).mul(temp.clickyes.gainMult.pow(temp.clickyes.gainExp)).mul(Decimal.max(player.tw.points, "1e150").div(temp.clickyes.requires).log(temp.clickyes.logarithm).add(1).floor());
+                if (inChallenge("lime", 11)) eff = eff.pow(0.15);
+                return eff;
+            },
+            effectDisplay() { return `+${format(upgradeEffect(this.layer, this.id))}/sec` },
+            onPurchase() {
+                player.clickyes.challenges[11] = 1;
+                player.clickyes.challenges[21] = 1;
+                player.clickyes.challenges[31] = 5;
+            },
+            unlocked() {
+                return hasUpgrade(this.layer, 14)
+            }
+        },
+        22: {
+            title: "More buyables????",
+            description: "Unlock a new Bzuki buyable. Also permanently unlock Bzuki buyables.",
+            cost: new Decimal(5000),
+            unlocked() {
+                return hasUpgrade(this.layer, 21)
+            }
+        },
+        31: {
+            title: "Self-Boost+",
+            description: "Multiply your lime.person points based on itself and improve \"Yet Another Self-Boost\".",
+            cost: new Decimal("1e7"),
+            effect() {
+                return player[this.layer].points.add(10).log10().pow(0.7);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 22)
+            }
+        },
+        32: {
+            title: "Hyper-Booster IV",
+            description: "Multiply your Bzuki points based on your characters.",
+            cost: new Decimal("2.5e16"),
+            effect() {
+                return player.points.log10().log10().max(0).add(1).pow(1.1);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 31)
+            }
+        },
+        33: {
+            title: "Hyper-Booster V",
+            description: "Multiply your lime.person points based on your characters.",
+            cost: new Decimal("1e19"),
+            effect() {
+                return player.points.log10().log10().max(0).add(1).pow(0.9);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            unlocked() {
+                return hasUpgrade(this.layer, 32)
+            }
+        },
+        34: {
+            title: "Softcap Nerfer",
+            description: "Delay the softcap of \"Acceleration III\" based on the amount of upgrades bought in this layer.",
+            cost: new Decimal("1e22"),
+            effect() {
+                return Decimal.pow(2, player.lime.upgrades.length);
+            },
+            effectDisplay() { return `x${formatWhole(upgradeEffect(this.layer, this.id))} to softcap start` },
+            unlocked() {
+                return hasUpgrade(this.layer, 33)
+            }
+        },
+        41: {
+            title: "More challenges?!?!",
+            description: "Unlock lime.person challenges.",
+            cost: new Decimal("1e23"),
+            unlocked() {
+                return hasUpgrade(this.layer, 34)
+            }
+        },
+        42: {
+            title: "Upgrade Addition",
+            description: "Unlock a new builder upgrade.",
+            cost: new Decimal("1e25"),
+            unlocked() {
+                return hasUpgrade(this.layer, 41)
+            }
+        }
+    },
+    milestones: {
+        0: {
+            requirementDescription() { return `${formatWhole(1)} lime.person point` },
+            effectDescription: "Fully automate the builder and spammer layers.",
+            done() { return player[this.layer].points.gte(1) }
+        },
+        1: {
+            requirementDescription() { return `${formatWhole(10)} lime.person points` },
+            effectDescription: "Keep your click yes milestones on reset.",
+            done() { return player[this.layer].points.gte(10) }
+        },
+        2: {
+            requirementDescription() { return `${formatWhole(2500)} lime.person points` },
+            effectDescription: "Keep your Bzuki milestones on reset.",
+            done() { return player[this.layer].points.gte(2500) }
+        }
+    },
+    challenges: { 
+        11: {
+            name: "October 2021 PinkiePie Spam",
+            challengeDescription: "Raise your characters by ^0.075, massively debuff \"Deca Quitin's Video That Ends It All\", \"Acceleration III\" and divide your builders and Bzuki points by /100.",
+            completionLimit: 5,
+            goalDescription() { return `${format(new Decimal("1e10").mul(Decimal.pow(2000, new Decimal(challengeCompletions(this.layer, this.id)).pow(1.6))))} Bzuki points` },
+            rewardDescription: "Multiply your lime.person points, Bzuki points and builders based on challenge completions.",
+            canComplete() { return player.bzuki.points.gte(new Decimal("1e10").mul(Decimal.pow(2000, new Decimal(challengeCompletions(this.layer, this.id)).pow(1.6)))) },
+            rewardEffect() {
+                return [Decimal.pow(2, challengeCompletions(this.layer, this.id)),
+                    Decimal.pow(3.5, challengeCompletions(this.layer, this.id)),
+                    Decimal.pow(5, challengeCompletions(this.layer, this.id))
+                ]
+            },
+            rewardDisplay() { return `x${format(challengeEffect(this.layer, this.id)[0])} to your lime.person points, x${format(challengeEffect(this.layer, this.id)[1])} to your Bzuki points, x${format(challengeEffect(this.layer, this.id)[2])} to your builders.` },
+            unlocked() {
+                return hasUpgrade("lime", 41)
+            }
+        }
+    },
+    tabFormat: {
+        "Main": {
+            content: [
+                "main-display",
+                "prestige-button",
+                ["display-text", function() { return `You have ${format(temp[this.layer].baseAmount)} ${layers[this.layer].baseResource}` }, {"margin": "5px 0", "display": "block", "width": "100%", "height": "20px"}],
+                "milestones",
+                "upgrades"
+            ]
+        },
+        "Challenges": {
+            content: [
+                "main-display",
+                "prestige-button",
+                ["display-text", function() { return `You have ${format(temp[this.layer].baseAmount)} ${layers[this.layer].baseResource}` }, {"margin": "5px 0", "display": "block", "width": "100%", "height": "20px"}],
+                "challenges"
+            ],
+            unlocked() {
+                return hasUpgrade("lime", 41)
+            }
+        }
+    }
+});
+/*
+Content for CYOD layer but commented out since bzuki joined before him
+addLayer("cyod", {
+    name: "cyod",
+    symbol: "CYOD",
+    position: 1,
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+        cyodPoints: new Decimal(0),
+        totalCyodPoints: new Decimal(0)
+    }},
+    color: "#e4abff",
+    requires: new Decimal(15000),
+    resource: "CYOD essences",
+    baseResource: "${temp.clickyes.resource}",
+    baseAmount() {return player.clickyes.points},
+    type: "normal",
+    exponent: new Decimal(0.5),
+    gainMult() {
+        mult = new Decimal(1);
+        if (hasUpgrade("cyod", 33)) mult = mult.mul(1.5);
+        if (getBuyableAmount("cyod", 12).gte(1)) mult = mult.mul(buyableEffect("cyod", 12));
+        return mult
+    },
+    gainExp() {
+        exp = new Decimal(1);
+        return exp
+    },
+    row: 4,
+    displayRow: 3,
+    hotkeys: [
+        {key: "c", description: "C: Reset for CYOD essence", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown() {
+        return hasUpgrade("clickyes", 42) || hasAchievement("ach", 24)
+    },
+    branches: [["tw", 2], ["spam", 1], ["clickyes", 1]],
+    cyodPointGain() {
+        let gain = player.cyod.total.pow(2);
+        if (hasUpgrade("cyod", 12)) gain = gain.mul(upgradeEffect("cyod", 12));
+        if (hasUpgrade("cyod", 14)) gain = gain.mul(upgradeEffect("cyod", 14));
+        if (hasUpgrade("cyod", 23)) gain = gain.mul(upgradeEffect("cyod", 23));
+        if (hasUpgrade("cyod", 32)) gain = gain.mul(upgradeEffect("cyod", 32));
+        if (getBuyableAmount("cyod", 11).gte(1)) gain = gain.mul(buyableEffect("cyod", 11)[1]);
+        return gain;
+    },
+    update(delta) {
+        player[this.layer].cyodPoints = player[this.layer].cyodPoints.add(temp[this.layer].cyodPointGain.mul(delta));
+        player[this.layer].totalCyodPoints = player[this.layer].totalCyodPoints.add(temp[this.layer].cyodPointGain.mul(delta))
+    },
+    upgrades: {
+        11: {
+            title: "Click Yes<sup>2</sup>",
+            description: "Multiply your characters and development points based on your total CYOD points.",
+            cost: new Decimal(5),
+            effect() {
+                let eff = player[this.layer].totalCyodPoints.add(1).pow(8);
+                if (hasUpgrade("cyod", 42)) eff = eff.pow(3);
+                return eff;
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] }
+        },
+        12: {
+            title: "Further Spamming",
+            description: "Multiply your CYOD points based on your characters and spammers.",
+            cost: new Decimal(25),
+            effect() {
+                return player.points.add(10).log10().add(9).log10().add(1).pow(0.55).mul(player.spam.points.add(10).log10().pow(0.06))
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 11)
+            }
+        },
+        13: {
+            title: "Clicking Yes 32qDu times",
+            description: "Multiply your ${temp.clickyes.resource} based on your CYOD points.",
+            cost: new Decimal(100),
+            effect() {
+                return player[this.layer].cyodPoints.add(1).log10().pow(0.5)
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 12)
+            }
+        },
+        14: {
+            title: "Even Further Spamming",
+            description: "Multiply your CYOD points based on your ${temp.clickyes.resource}.",
+            cost: new Decimal(150),
+            effect() {
+                return player.clickyes.points.add(1.5).pow(0.2)
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 13)
+            }
+        },
+        21: {
+            title: "Click Yes<sup>3</sup>",
+            description: "Builders no longer reset anything and multiply your TextWallers based on your total CYOD points.",
+            cost: new Decimal(400),
+            effect() {
+                return player[this.layer].totalCyodPoints.add(1).pow(7)
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 14)
+            }
+        },
+        22: {
+            title: "Hyper-Click Yes",
+            description: "Improve \"Super-Click Yes\" again.",
+            cost: new Decimal(1000),
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 21)
+            }
+        },
+        23: {
+            title: "Super-Spamming",
+            description: "Multiply your CYOD points based on itself.",
+            cost: new Decimal(2500),
+            effect() {
+                return player[this.layer].cyodPoints.add(10).log10().pow(1.4);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 22)
+            }
+        },
+        24: {
+            title: "/click yes spam Expansion II",
+            description: "Automatically buy builder upgrades.",
+            cost: new Decimal(2),
+            unlocked() {
+                return hasUpgrade("cyod", 23)
+            }
+        },
+        31: {
+            title: "/click yes spam Expansion III",
+            description: "Automatically buy spammer upgrades.",
+            cost: new Decimal(50000),
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 24)
+            }
+        },
+        32: {
+            title: "Click Yes<sup>4</sup>",
+            description: "Multiply your CYOD points based on the amount of CYOD layer upgrades bought.",
+            cost: new Decimal(100000),
+            effect() {
+                return Decimal.pow(1.15, player[this.layer].upgrades.length);
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 31)
+            }
+        },
+        33: {
+            title: "Click Yes<sup>5</sup>",
+            description: "Automatically gain 100% of your spammers you get on reset per second. Also multiply your CYOD essence by x1.5.",
+            cost: new Decimal(5),
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 32)
+            }
+        },
+        34: {
+            title: "Click Yes<sup>6</sup>",
+            description: "Multiply your builders based on your total CYOD essence. Also keep your click yes layer milestones on reset.",
+            cost: new Decimal(450000),
+            effect() {
+                return player[this.layer].total.add(10).log10().pow(0.6)
+            },
+            effectDisplay() { return `x${format(upgradeEffect(this.layer, this.id))}` },
+            currencyDisplayName: "CYOD points",
+            currencyInternalName: "cyodPoints",
+            currencyLocation() { return player[this.layer] },
+            unlocked() {
+                return hasUpgrade("cyod", 33)
+            }
+        },
+        41: {
+            title: "Click Yes Buyables",
+            description: "Unlock CYOD buyables. Also automatically reset for builders every tick.",
+            cost: new Decimal(40),
+            unlocked() {
+                return hasUpgrade("cyod", 34)
+            }
+        },
+        42: {
+            title: "Click Yes<sup>Click Yes</sup>",
+            description: "Improve \"Click Yes<sup>2</sup>\".",
+            cost: new Decimal(100),
+            unlocked() {
+                return hasUpgrade("cyod", 41)
+            }
+        },
+        43: {
+            title: "Further QOL",
+            description: "Keep your click yes layer challenge completions on reset.",
+            cost: new Decimal(500),
+            unlocked() {
+                return hasUpgrade("cyod", 42)
+            }
+        }
+    },
+    buyables: {
+        11: {
+            title() { return `Clicking Yes ${formatWhole(Decimal.pow(2, getBuyableAmount("cyod", 11)))} Times/sec` },
+            cost(x) { return new Decimal(5).mul(Decimal.pow(2, x)) },
+            display() { return `Multiplying your ${temp.clickyes.resource} by x${format(this.effect()[0])} and your CYOD points by x${format(this.effect()[1])}.<br>
+                <b>Cost:</b> ${formatWhole(this.cost())} CYOD essence<br>
+                <b>Amount:</b> ${formatWhole(getBuyableAmount(this.layer, this.id))}` },
+            effect() {
+                return [Decimal.pow(1.5, getBuyableAmount(this.layer, this.id)), Decimal.pow(1.2, getBuyableAmount(this.layer, this.id))]
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                let purchases = Decimal.affordGeometricSeries(player[this.layer].points, 5, 2, getBuyableAmount(this.layer, this.id));
+                let cost = Decimal.sumGeometricSeries(purchases, 5, 2, getBuyableAmount(this.layer, this.id));
+                player[this.layer].points = player[this.layer].points.sub(cost);
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(purchases));
+            },
+            unlocked() {
+                return hasUpgrade("cyod", 41)
+            }
+        },
+        12: {
+            title: "CYOD Essence Multiplier",
+            cost(x) { return new Decimal("1e8").mul(Decimal.pow(10, x)) },
+            display() { return `Multiplying your CYOD essence by x${format(this.effect())}.<br>
+                <b>Cost:</b> ${formatWhole(this.cost())} CYOD points<br>
+                <b>Amount:</b> ${formatWhole(getBuyableAmount(this.layer, this.id))}` },
+            effect() {
+                return Decimal.pow(1.08, getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player.cyod.cyodPoints.gte(this.cost()) },
+            buy() {
+                let purchases = Decimal.affordGeometricSeries(player.cyod.cyodPoints, "1e8", 10, getBuyableAmount(this.layer, this.id));
+                let cost = Decimal.sumGeometricSeries(purchases, "1e8", 10, getBuyableAmount(this.layer, this.id));
+                player.cyod.cyodPoints = player.cyod.cyodPoints.sub(cost);
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(purchases));
+            },
+            unlocked() {
+                return hasUpgrade("cyod", 41)
+            }
+        }
+    },
+    tabFormat: [
+        "main-display",
+        "prestige-button",
+        ["display-text", function() { return `You have ${formatWhole(player[this.layer].cyodPoints)} CYOD points (+${format(temp[this.layer].cyodPointGain)}/sec).` }, {"margin": "5px 0", "display": "block", "width": "100%", "height": "20px"}],
+        "milestones",
+        "buyables",
+        "upgrades"
+    ]
+});*/
 addLayer("ach", {
     startData() {return {
         unlocked: true
@@ -878,12 +1798,12 @@ addLayer("ach", {
             name: "<span style='font-size:0.8em'>I don't think the server can handle this many TextWallers</span>",
             done() { return player["tw"].points.gte("1e100") },
             tooltip() { return `Get ${format("1e100")} TextWallers.` },
-            image: "./ach/placeholder.png"
+            image: "./ach/21.png"
         },
         22: {
             name: "Should we make a game?",
             done() { return player["clickyes"].points.gte(1) },
-            tooltip: "Reset for yes button clicks.<br>REWARD: Builder layer and spammer layer no longer increase eachother's requirements.",
+            tooltip() { return `Reset for ${temp.clickyes.resource}.<br>REWARD: Builder layer and spammer layer no longer increase eachother's requirements.` },
             image: "./ach/22.png"
         },
         23: {
@@ -892,11 +1812,47 @@ addLayer("ach", {
             tooltip() { return `Get ${format("1e666")} TextWallers.` },
             image: "./ach/23.png"
         },
+        24: {
+            name: "Is that a moderator???",
+            done() { return player.bzuki.points.gte(1) },
+            tooltip: "Reset for Bzuki points.<br>REWARD: Automate and keep all upgrades of the development and TextWall layers. Also keeps all milestones of the builder and spammer layers.",
+            image: "./ach/placeholder.png"
+        },
+        25: {
+            name: "That was moderately fast",
+            done() { return challengeCompletions("clickyes", 31) >= 5 },
+            tooltip: "Complete the challenge \"July 2021 DDoS Attack\" 5 times.",
+            image: "./ach/placeholder.png"
+        },
         31: {
+            name: "Points: Points: 0",
+            done() { return player.bzuki.points.gte("1e6") },
+            tooltip() { return `Get ${format("1e6")} Bzuki points.` },
+            image: "./ach/31.png"
+        },
+        32: {
+            name: "Another TextWaller",
+            done() { return player.lime.points.gte(1) },
+            tooltip: "Reset for lime.person points.",
+            image: "./ach/placeholder.png"
+        },
+        33: {
+            name: "Click Yes is Dead",
+            done() { return hasUpgrade("lime", 21) },
+            tooltip: "Purchase the upgrade \"Deca Quitin's Video That Ends It All\".",
+            image: "./ach/placeholder.png"
+        },
+        34: {
             name: "Vector's Intermediate Illion",
             done() { return player.tw.points.gte("1e121301328") },
-            tooltip() { return `Get ${format("1e121301328")} TextWallers. (most likely unobtainable rn)` },
-            image: "./ach/31.png"
+            tooltip() { return `Get ${format("1e121301328")} TextWallers.` },
+            image: "./ach/41.png"
+        },
+        35: {
+            name: "Isn't click yes dead already?",
+            done() { return player.clickyes.points.gte(Decimal.pow(2, 1024)) },
+            tooltip() { return `Get ${format(Decimal.pow(2, 1024))} ${temp.clickyes.resource}.` },
+            image: "./ach/placeholder.png"
         }
     },
     tabFormat: [
