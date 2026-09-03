@@ -23,7 +23,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Headings for major updates now have a gradient.<br>
 		- Added 6 more achievements.<br>
 		- Modified the upgrade sizes to fit more text in.<br>
-		- Endgame: ${format("1e30")} lime.person points.<br>
+		- Endgame: 1.00e30 lime.person points.<br>
 	<h4>v0.1.1</h4>
 		- Changed an achievement and added images to some achievements (and placeholder ones were used for ones that don't)<br>
 	<h3 class="gradienttemplate" style="background:linear-gradient(45deg, #00ffff, #00ff00, #ff0000);">v0.1</h3><br>
