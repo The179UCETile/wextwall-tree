@@ -92,15 +92,19 @@ addLayer("x", {
 
     // FIXED: Corrected tabFormat syntax structure to correctly map tab keys directly to component arrays.
     tabFormat: {
-        "Multiplier": [
-            "main-display",
-            ["display-text", function() { return "You are gaining " + format(typeof player.x.points !== 'undefined' ? player.x.points : 0) + " multiplier per second" }],
-            "blank",
-            "upgrades"
-        ],
-        "Credit": [
-            ["infobox", "lore"] // Standard syntax to correctly display your custom infobox inside a tab array
-        ],
+        "Multiplier": {
+			content: [
+        	    "main-display",
+      		    ["display-text", function() { return "You are gaining " + format(typeof player.x.points !== 'undefined' ? player.x.points : 0) + " multiplier per second" }],
+            	"blank",
+            	"upgrades"
+        	]
+		},
+        "Credit": {
+			content: [
+            	["infobox", "lore"] // Standard syntax to correctly display your custom infobox inside a tab array
+        	]
+		},
     },
 
     upgrades: {
