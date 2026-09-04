@@ -81,20 +81,14 @@ function milestoneShown(layer, id) {
 
 let formatOption = (opt) => opt ? 'ON' : 'OFF'
 
-const BADNOTATION_DISPLAYS = ["Default (recommended)", "Grand Button Incr.", "True 179uc",
-	"Shit standard", "Shit standard 2", "Points Progression",
-	"Mid notation", "Vector's standard", "New vector's standard",
-	"Old setsumi's standard", "Diamond's notation", "Merging Legends",
-	"Denutation", "NullArea's bad notation"
-];
+const BADNOTATION_DISPLAYS = ["Default (recommended)"];
 
-const BADNOTATION_SETTINGS = ["none", "GrandButtonIncrementalStandard", "True179ucStandard",
-	"CrapStandard", "CrapStandard2", "PointsProgressionStandard",
-	"Mid", "VectorStandard", "NewVectorStandard",
-	"OldSetsumiStandard", "Ultimer", "MergingLegendsStandard",
-	"Denutation", "NullAreaBadNotation"
-];
+const BADNOTATION_SETTINGS = ["none"];
 
+for (let i in BadNotations) {
+	BADNOTATION_DISPLAYS.push(BadNotations[i].name);
+	BADNOTATION_SETTINGS.push(i);
+}
 function loadBadNotation() {
 	if (document.getElementById("badNotationSelect")) {
 		while (document.getElementById("badNotationSelect").firstChild) {
