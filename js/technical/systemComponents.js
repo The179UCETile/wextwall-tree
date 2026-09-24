@@ -154,23 +154,23 @@ var systemComponents = {
         <table>
             <tr>
                 <td><button class="opt" onclick="save()">Save</button></td>
-                <td><button class="opt" onclick="toggleOpt('autosave')">Autosave: <span v-html="options.autosave?"ON":"OFF" "></span></button></td>
+                <td><button class="opt" onclick="toggleOpt('autosave')">Autosave: <span v-html="options.autosave?'ON':'OFF'"></span></button></td>
                 <td><button class="opt" onclick="hardReset()">HARD RESET</button></td>
             </tr>
             <tr>
                 <td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
                 <td><button class="opt" onclick="importSave()">Import</button></td>
-                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: <span v-html="options.offlineProd?"ON":"OFF" "></span></button></td>
+                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: <span v-html="options.offlineProd?'ON':'OFF'"></span></button></td>
             </tr>
             <tr>
                 <td><button class="opt" onclick="switchTheme()">Theme: <span v-html="getThemeName() "></span></button></td>
                 <td><button class="opt" onclick="adjustMSDisp()">Show Milestones: <span v-html="MS_DISPLAYS[MS_SETTINGS.indexOf(options.msDisplay)]"></span></button></td>
-                <td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: <span v-html="options.hqTree?"ON":"OFF" "></span></button></td>
+                <td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: <span v-html="options.hqTree?'ON':'OFF'"></span></button></td>
             </tr>
             <tr>
-                <td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: <span v-html="options.hideChallenges?"HIDDEN":"SHOWN" "></span></button></td>
-                <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: <span v-html="options.forceOneTab?"ALWAYS":"AUTO" "></span></button></td>
-								<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: <span v-html="options.forceTooltips?"ON":"OFF" "></span></button></td>
+                <td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: <span v-html="options.hideChallenges?'HIDDEN':'SHOWN'"></span></button></td>
+                <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: <span v-html="options.forceOneTab?'ALWAYS':'AUTO'"></span></button></td>
+								<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: <span v-html="options.forceTooltips?'ON':'OFF'"></span></button></td>
 				</tr> 
 			<tr>
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">Show Milestone Popups: <span v-html="formatOption(!options.hideMilestonePopups) "></span></button></td>
