@@ -136,7 +136,9 @@ var systemComponents = {
         The Modding Tree <a v-bind:href="'https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md'" target="_blank" class="link" v-bind:style = "{'font-size': '14px', 'display': 'inline'}" ><span v-html="TMT_VERSION.tmtNum"></span></a> by Acamaeda and FlamemasterNXF
         <br>
         The Prestige Tree made by Jacorb and Aarex<br>
-				999qi's website on <a class="link" href="https://historyoftextwall.neocities.org/" target="_blank" v-bind:style="{'font-size': '14px', 'display': 'inline'}">the history of TextWall</a> was taken as a reference
+				999qi's website on <a class="link" href="https://historyoftextwall.neocities.org/" target="_blank" v-bind:style="{'font-size': '14px', 'display': 'inline'}">the history of TextWall</a> was taken as a reference<br>
+				<br>
+				{{ physicalScaleText }}
 		<br><br>
 		<div class="link" onclick="showTab('changelog-tab')">Changelog</div><br>
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank"><span v-html="modInfo.discordName"></span></a><br></span>

@@ -1,5 +1,6 @@
 var player;
 var needCanvasUpdate = true;
+var physicalScaleText = "update pls";
 
 // Don't change this
 const TMT_VERSION = {
@@ -430,6 +431,12 @@ var interval = setInterval(function() {
 	fixNaNs()
 	adjustPopupTime(trueDiff)
 	updateParticles(trueDiff)
+	// very hacky fix so that the notations are not fixed to Default
+	let nn = EternalNotations.HTMLPresets.Default.format(player.points);
+	let s = EternalNotations.physicalScale(player.points).replace(new RegExp(nn, "g"), "{{CURRENT_NUMBER}}");
+	s = s[0].toLowerCase() + s.slice(1);
+	s = s.replace(/\{\{CURRENT_NUMBER\}\}/g, format(player.points));
+	physicalScaleText = s.includes("water") ? `If every character is equalivalent to 1 litre of water, then ${s}` : `To give you a sense of how large the amount of characters you have is, ${s}`
 	ticking = false
 }, 50)
 

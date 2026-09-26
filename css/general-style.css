@@ -7,7 +7,7 @@
 @font-face {
   font-family: unifont;
   src: url(https://the179ucetile.github.io/h/fonts/unifont_upper-18.0.01.otf);
-  unicode-range: U+10000-1D400, U+1D800-10FFFF; /* exclude mathematical alphanumeric symbols */
+  unicode-range: U+10000-1D400, U+1D4A4, U+1D800-10FFFF; /* exclude mathematical alphanumeric symbols */
 }
 body {
 	color: var(--color);
@@ -16,6 +16,10 @@ body {
 	--color: #dfdfdf;
 	--points: #ffffff;
 	background: var(--background);
+}
+
+* {
+	word-wrap: break-word;
 }
 
 /* General text */
