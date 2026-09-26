@@ -45,9 +45,7 @@ function format(decimal, precision = 2, small, forceNotation) {
     decimal = new Decimal(decimal)
     notation = forceNotation ?? options.badNotation;
     if (notation != "none") {
-        let fmt = BadNotations[notation]?.format(decimal, {isPrecision: false, decimals: precision, fallbackNotation: function(n){return format(n, precision, small, "none")}});
-        if (notation == "OneCharacterCrapStandard") fmt = `<span style="font-family:unifont">${fmt}</span>`;
-        return fmt;
+        return BadNotations[notation]?.format(decimal, {isPrecision: false, decimals: precision, fallbackNotation: function(n){return format(n, precision, small, "none")}});
     };
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
         player.hasNaN = true;
