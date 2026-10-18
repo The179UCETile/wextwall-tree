@@ -1,0 +1,9 @@
+.badnotations-tile {
+  display: inline-block;
+  margin: 4px;
+  width: 2em;
+  height: 2em;
+  background-image: url(tile.svg);
+  background-size: contain;
+  vertical-align: middle;
+}
